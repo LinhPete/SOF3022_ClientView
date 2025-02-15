@@ -90,11 +90,11 @@
 </template>
 
 <script setup>
-import Footer from "./menu-link/Footer.vue";
-import Header from "./menu-link/Header.vue";
+import Footer from "../menu-link/Footer.vue";
+import Header from "../menu-link/Header.vue";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-import axiosInstance from "../axios/asios";
+import axiosInstance from "../../axios/asios";
 
 const message = ref("");
 const router = useRouter();

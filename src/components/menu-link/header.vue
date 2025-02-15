@@ -21,8 +21,11 @@
       </div>
       <div class="cart">
         <router-link to="/payment"
-          ><i class="fa-solid fa-bag-shopping fa-xl" style="padding: 10px"></i
-        ></router-link>
+          ><i class="fa-solid fa-bag-shopping fa-xl" style="padding: 10px"></i>
+          <span v-if="totalItems > 0" class="cart-badge">{{
+            totalItems
+          }}</span></router-link
+        >
       </div>
     </div>
   </div>
@@ -32,6 +35,33 @@
 <script setup>
 import Menu from "./Menu.vue";
 import UserDropMenu from "./UserDropMenu.vue";
+import { computed } from "vue";
+import { useCartStore } from "../../stores/cartStore";
+const cartStore = useCartStore();
+// Tính tổng số sản phẩm trong giỏ hàng
+const totalItems = computed(() => cartStore.totalCartItems);
 </script>
 
-<style></style>
+<style scoped>
+.cart {
+  position: relative;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.cart-badge {
+  position: absolute;
+  top: -5px;
+  right: -10px;
+  background: red;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+</style>

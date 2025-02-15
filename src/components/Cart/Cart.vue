@@ -1,28 +1,28 @@
 <template>
   <div>
     <Header />
-    <aside>
+    <aside v-if="cartStore.cart.length > 0">
       <div class="giohang">
         <div class="sanphamgiohang">
           <div class="boxduongdan">
             <div class="duongdan" style="width: 90%">
               <label for=""
-                >Có <b>{{ cart.length }} sản phẩm</b> trong giỏ hàng</label
+                >Có <b>{{ cartStore.cart.length }} sản phẩm</b> trong giỏ
+                hàng</label
               >
             </div>
           </div>
-
-          <div v-for="(item, index) in cart" :key="item.id">
+          <div v-for="(item, index) in cartStore.cart" :key="item.id">
             <div class="khunggiohang">
               <div class="hinh">
-                <img :src="item.image" alt="" />
+                <img :src="getProdImg(item.productId)" :alt="item.name" />
               </div>
               <div class="tenvagia">
-                <label for=""
+                <label
                   ><b>{{ item.name }}</b></label
                 >
                 <div class="duongdan" style="padding-top: 7px">
-                  <label for="">{{ formatCurrency(item.price) }}</label>
+                  <label>{{ formatCurrency(item.price) }}</label>
                 </div>
                 <div class="quantity-control">
                   <button @click="decreaseQuantity(index)" class="quantity-btn">
@@ -43,9 +43,8 @@
                 <i
                   class="fa-solid fa-delete-left"
                   @click="removeItem(index)"
-                ></i
-                ><br /><br />
-                <label for=""
+                ></i>
+                <label
                   ><b>{{
                     formatCurrency(item.price * item.quantity)
                   }}</b></label
@@ -54,25 +53,16 @@
             </div>
             <hr />
           </div>
-
-          <div class="khunggiohang">
-            <div class="ghichu">
-              <b style="font-size: 12px; color: gray">Ghi chú đơn hàng</b><br />
-              <input type="text" v-model="note" />
-            </div>
-          </div>
         </div>
 
         <div class="thanhtoan">
           <div class="boxthanhtoan">
             <div class="thanhtoannho">
-              <label for=""><b>Thông tin đơn hàng</b></label>
+              <label><b>Thông tin đơn hàng</b></label>
               <hr />
               <div class="tongtien">
-                <div class="chutongtien" style="font-size: 12px; color: gray">
-                  <b>Tổng tiền</b>
-                </div>
-                <div class="sotongtien" style="font-size: 16px; color: red">
+                <div class="chutongtien"><b>Tổng tiền</b></div>
+                <div class="sotongtien">
                   <b>{{ formatCurrency(totalPrice) }}</b>
                 </div>
               </div>
@@ -80,56 +70,60 @@
               <button @click="checkout">THANH TOÁN</button>
             </div>
           </div>
-          <label for="" style="color: gray; font-size: 12px; margin-top: 20px">
-            <i class="fa-solid fa-share"></i> Tiếp tục mua hàng
-          </label>
         </div>
       </div>
     </aside>
+
+    <div v-else>
+      <p>Giỏ hàng của bạn đang trống.</p>
+    </div>
+
     <Footer />
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
-import Footer from "./menu-link/Footer.vue";
-import Header from "./menu-link/Header.vue";
-
-const cart = ref([
-  {
-    id: 1,
-    name: "STAR PLUSH CHARM - WHITE",
-    price: 70000,
-    quantity: 1,
-    image: "../assets/img/sp10.webp",
-  },
-  {
-    id: 2,
-    name: "STAR PLUSH CHARM - WHITE",
-    price: 70000,
-    quantity: 1,
-    image: "../assets/img/sp1.webp",
-  },
-]);
-
+import { ref, computed, onMounted } from "vue";
+import { useCartStore } from "../../stores/cartStore";
+import Header from "../menu-link/Header.vue";
+import Footer from "../menu-link/Footer.vue";
+import { useProductStore } from "../../stores/productStore";
+// Sử dụng store để truy cập giỏ hàng
+const cartStore = useCartStore();
 const note = ref("");
 
-const increaseQuantity = (index) => {
-  cart.value[index].quantity++;
-};
+onMounted(() => {
+  cartStore.fetchCart();
+});
 
-const decreaseQuantity = (index) => {
-  if (cart.value[index].quantity > 1) {
-    cart.value[index].quantity--;
+const increaseQuantity = (index) => {
+  const item = cartStore.cart[index];
+  if (item) {
+    cartStore.updateQuantity(index, item.quantity + 1);
   }
 };
 
-const removeItem = (index) => {
-  cart.value.splice(index, 1);
+const decreaseQuantity = (index) => {
+  const item = cartStore.cart[index];
+  if (item && item.quantity > 1) {
+    cartStore.updateQuantity(index, item.quantity - 1);
+  }
 };
 
 const totalPrice = computed(() => {
-  return cart.value.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  return (
+    cartStore.cart?.reduce(
+      (sum, item) => sum + (item.price || 0) * (item.quantity || 1),
+      0
+    ) || 0
+  );
+});
+
+const productStore = useProductStore();
+
+const getProdImg = computed(() => (prodId) => {
+  const product = productStore.products.find((p) => p.id === prodId);
+  return product?.image ?? "path/to/default/image.jpg";
 });
 
 const formatCurrency = (value) => {
@@ -139,9 +133,17 @@ const formatCurrency = (value) => {
   }).format(value);
 };
 
+const removeItem = (index) => {
+  cartStore.removeFromCart(index);
+  cartStore.fetchCart();
+};
+
 const checkout = () => {
-  alert("Thanh toán đơn hàng thành công!");
+  if (!cartStore.cart.length) {
+    alert("Giỏ hàng trống, không thể thanh toán!");
+    return;
+  }
+  // Nếu chưa có phương thức checkout, bạn có thể gọi API hoặc xử lý đặt hàng tại đây
+  console.log("Chức năng thanh toán đang được phát triển...");
 };
 </script>
-
-<style scoped></style>

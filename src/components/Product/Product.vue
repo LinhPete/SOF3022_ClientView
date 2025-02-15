@@ -38,11 +38,14 @@
             </label>
           </div>
           <div>
-            <p style="font-size: 20px">
+            <p
+              style="font-size: 20px"
+              @click="cartStore.addProductToCart(product)"
+            >
               Thêm vào giỏ hàng
               <i
                 class="fa-solid fa-bag-shopping fa-xl"
-                style="padding: 10px"
+                style="padding: 10px; cursor: pointer"
               ></i>
             </p>
           </div>
@@ -55,10 +58,9 @@
 <script setup>
 import { onMounted } from "vue";
 import { useProductStore } from "../../stores/productStore";
-import { useRouter } from "vue-router";
-
+import { useCartStore } from "../../stores/cartStore";
 const productStore = useProductStore();
-const route = useRouter();
+const cartStore = useCartStore();
 onMounted(() => {
   productStore.fetchProduct();
 });
