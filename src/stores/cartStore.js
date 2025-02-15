@@ -6,8 +6,6 @@ export const useCartStore = defineStore("cart", {
   state: () => ({
     cart: JSON.parse(localStorage.getItem("cartInfo")) || [], // Load từ localStorage
     userInfo: JSON.parse(localStorage.getItem("userInfo")) || null,
-    totalQuantity: 0,
-    totalAmount: 0,
     loading: false,
     error: null,
   }),
@@ -38,7 +36,7 @@ export const useCartStore = defineStore("cart", {
         let updatedCart;
         if (existingItem) {
           existingItem.quantity += 1;
-          await axiosInstance.put("store/cart/update", {
+          await axiosInstance.put("store/cart/items", {
             userId: userId,
             productId: product.id,
             quantity: existingItem.quantity,
@@ -59,6 +57,7 @@ export const useCartStore = defineStore("cart", {
         this.cart = updatedCart;
         localStorage.setItem("cartInfo", JSON.stringify(this.cart));
         alert(`Đã thêm ${product.name} vào giỏ hàng!`);
+        console.log(`Đã thêm ${product.name} vào giỏ hàng!`);
       } catch (error) {
         this.error = "Không thể thêm sản phẩm vào giỏ hàng";
       } finally {
@@ -145,7 +144,7 @@ export const useCartStore = defineStore("cart", {
         return;
       }
       try {
-        await axiosInstance.put("store/cart/items", {
+        await axiosInstance.post("store/cart/items", {
           userId: this.userInfo.id,
           productId: item.productId,
           quantity: newQuantity,

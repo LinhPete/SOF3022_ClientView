@@ -24,7 +24,7 @@ export const useProductStore = defineStore("products", {
     async fetchProductbyId(id) {
       try {
         const response = await axiosInstance.get(`/store/products/${id}`);
-        return response.data.result || null; // Trả về `null` nếu sản phẩm không tồn tại
+        this.product = response.data.result || null; // Trả về `null` nếu sản phẩm không tồn tại
       } catch (error) {
         console.error(`Lỗi khi lấy sản phẩm ID: ${id}`, error);
         return null;

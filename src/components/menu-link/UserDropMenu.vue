@@ -36,6 +36,7 @@ const userStore = useUserStore();
 const cartStore = useCartStore();
 const router = useRouter();
 const isOpen = ref(false);
+
 const toggleDropdown = () => {
   isOpen.value = !isOpen.value;
 };
