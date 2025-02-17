@@ -57,7 +57,6 @@ export const useCartStore = defineStore("cart", {
         this.cart = updatedCart;
         localStorage.setItem("cartInfo", JSON.stringify(this.cart));
         alert(`Đã thêm ${product.name} vào giỏ hàng!`);
-        console.log(`Đã thêm ${product.name} vào giỏ hàng!`);
       } catch (error) {
         this.error = "Không thể thêm sản phẩm vào giỏ hàng";
       } finally {

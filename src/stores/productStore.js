@@ -21,10 +21,13 @@ export const useProductStore = defineStore("products", {
         this.loading = false;
       }
     },
-    async fetchProductbyId(id) {
+    async fetchProductbyId(productId) {
       try {
-        const response = await axiosInstance.get(`/store/products/${id}`);
-        this.product = response.data.result || null; // Trả về `null` nếu sản phẩm không tồn tại
+        const response = await axiosInstance.get(
+          `/store/products/${productId}`
+        );
+        this.product = response.data.result || null;
+        return this.product; // Trả về `null` nếu sản phẩm không tồn tại
       } catch (error) {
         console.error(`Lỗi khi lấy sản phẩm ID: ${id}`, error);
         return null;

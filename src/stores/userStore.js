@@ -58,7 +58,7 @@ export const useUserStore = defineStore("user", {
     async fetchUserInfo() {
       try {
         if (!this.token) {
-          console.warn("Không có token, không thể lấy thông tin người dùng.");
+          // console.warn("Không có token, không thể lấy thông tin người dùng.");
           return;
         }
 
