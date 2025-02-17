@@ -1,6 +1,6 @@
 <template>
   <div>
-   <Header></Header>
+    <Header></Header>
 
     <div class="container-default">
       <article>
@@ -39,9 +39,12 @@
             <button type="submit" class="submit-btn">Gửi</button>
 
             <!-- Link quay lại -->
-            <router-link to="/"><a class="back-link"
-              ><strong style="font-size: 14px; margin-right: 10px">← </strong
-              >Quay lại trang chủ</a> </router-link>
+            <router-link to="/"
+              ><a class="back-link"
+                ><strong style="font-size: 14px; margin-right: 10px">← </strong
+                >Quay lại trang chủ</a
+              >
+            </router-link>
           </form>
         </div>
       </aside>
@@ -51,8 +54,8 @@
 </template>
 
 <script setup>
-import Header from './menu-link/Header.vue';
-import Footer from "./menu-link/Footer.vue";
+import Header from "../menu-link/Header.vue";
+import Footer from "../menu-link/Footer.vue";
 </script>
 
 <style></style>

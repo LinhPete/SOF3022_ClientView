@@ -113,10 +113,10 @@
 
 <script setup>
 import { onMounted, ref, defineProps } from "vue";
-import Header from "./menu-link/Header.vue";
-import Footer from "./menu-link/Footer.vue";
-import { useCategoryStore } from "../stores/categoryStrore";
-import { useProductStore } from "../stores/productStore";
+import Header from "../menu-link/Header.vue";
+import Footer from "../menu-link/Footer.vue";
+import { useCategoryStore } from "../../stores/categoryStrore";
+import { useProductStore } from "../../stores/productStore";
 // Khai báo prop nhận từ route (giả sử là id của danh mục)
 const props = defineProps({
   id: {

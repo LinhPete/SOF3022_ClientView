@@ -6,27 +6,27 @@ const router = createRouter({
     {
       path: "/",
       name: "home",
-      component: () => import("../components/Home.vue"),
+      component: () => import("../components/Home/Home.vue"),
     },
     {
       path: "/login",
       name: "login",
-      component: () => import("../components/DangNhap.vue"),
+      component: () => import("../components/User/DangNhap.vue"),
     },
     {
       path: "/register",
       name: "register",
-      component: () => import("../components/DangKy.vue"),
+      component: () => import("../components/User/DangKy.vue"),
     },
     {
       path: "/forgot-password",
       name: "forgotpassword",
-      component: () => import("../components/QuenMatKhau.vue"),
+      component: () => import("../components/User/QuenMatKhau.vue"),
     },
     {
       path: "/payment",
       name: "payment",
-      component: () => import("../components/ThanhToan.vue"),
+      component: () => import("../components/Cart/Cart.vue"),
     },
     {
       path: "/newarrival",
@@ -56,7 +56,7 @@ const router = createRouter({
     {
       path: "/outerWear",
       name: "PuterWear",
-      component: () => import("../components/CategoryDetail.vue"),
+      component: () => import("../components/Category/CategoryDetail.vue"),
     },
     {
       path: "/SaleSaff",
@@ -71,14 +71,14 @@ const router = createRouter({
     {
       path: "/category/:id",
       name: "CategoryDetail",
-      component: () => import("../components/CategoryDetail.vue"),
+      component: () => import("../components/Category/CategoryDetail.vue"),
       props: true, // Giúp truyền param 'id' vào component dưới dạng prop
     },
     {
       path: "/product-detail/:id",
       name: "Product Detail",
       component: () => import("../components/Product/ProductDetail.vue"),
-      props: true,
+      // props: true,
     },
   ],
 });

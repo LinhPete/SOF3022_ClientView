@@ -87,27 +87,29 @@
             <button type="submit" class="submit-btn">ĐĂNG KÝ</button>
 
             <!-- Link quay lại -->
-            <router-link to="/"><a class="back-link"
-              ><strong style="font-size: 14px; margin-right: 10px">← </strong
-              >Quay lại trang chủ</a> </router-link>
+            <router-link to="/"
+              ><a class="back-link"
+                ><strong style="font-size: 14px; margin-right: 10px">← </strong
+                >Quay lại trang chủ</a
+              >
+            </router-link>
             >
           </form>
         </div>
       </aside>
     </div>
     <footer>
-     <Footer></Footer>
+      <Footer></Footer>
     </footer>
   </div>
 </template>
 
 <script setup>
-import Footer from "./menu-link/Footer.vue";
-import Header from "./menu-link/Header.vue";
-import { useUserStore } from "../stores/userStore";
+import Footer from "../menu-link/Footer.vue";
+import Header from "../menu-link/Header.vue";
+import { useUserStore } from "../../stores/userStore";
 import { ref } from "vue";
 import { useRouter } from "vue-router"; // Thêm import này
-
 
 const router = useRouter(); // Khai báo router
 const userStore = useUserStore();
@@ -141,7 +143,7 @@ const handleRegister = async () => {
       lastName: user.value.lastName,
       birthday: new Date(user.value.birthday).toISOString().split("T")[0],
     });
-    
+
     if (success) {
       alert("Đăng ký và đăng nhập thành công");
       router.push("/"); // Chuyển hướng về trang chủ
