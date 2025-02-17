@@ -1,7 +1,4 @@
 <template>
-  <header>
-    <Header></Header>
-  </header>
   <section>
     <div class="boxduongdan">
       <div class="duongdan">
@@ -105,10 +102,6 @@
       </div>
     </div>
   </section>
-
-  <footer>
-    <Footer></Footer>
-  </footer>
 </template>
 
 <script setup>

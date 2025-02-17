@@ -1,22 +1,19 @@
 <template>
-    <header>
-        <Header></Header>
-    </header>
 
     <section>
         <div class="boxduongdan">
             <div class="duongdan">
                 <span>Trang chủ</span>
                 <span>/</span>
-                <span>Danh mục</span> 
+                <span>Danh mục</span>
                 <span>/</span>
                 <span>flash sale</span>
             </div>
-        </div>  
-   
+        </div>
+
         <div class="container-default-NA">
-            <h1>Flash sale</h1>    
-         
+            <h1>Flash sale</h1>
+
             <div class="filter-container">
                 <div class="filter">
                     <span class="filter-icon"><i class="fa-solid fa-filter"></i></span>
@@ -44,16 +41,16 @@
                         </select>
                     </label>
                 </div>
-                <div class="filter-item-popular"> 
-                <label>
-                    <select>
-                        <option>SẮP XẾP</option>
-                        <option>A-Z</option>
-                        <option>GIÁ TĂNG DẦN</option>
-                        <option>GIÁ GIẢM DẦN</option>
-                    </select>
-                </label>
-            </div>
+                <div class="filter-item-popular">
+                    <label>
+                        <select>
+                            <option>SẮP XẾP</option>
+                            <option>A-Z</option>
+                            <option>GIÁ TĂNG DẦN</option>
+                            <option>GIÁ GIẢM DẦN</option>
+                        </select>
+                    </label>
+                </div>
             </div>
             <div class="boxspto">
                 <div class="boxsp" id="loadsp"></div>
@@ -64,17 +61,10 @@
             </div>
         </div>
     </section>
-
-    <footer>
-        <Footer></Footer>
-    </footer>
 </template>
 
 <script setup>
-import Footer from "./menu-link/Footer.vue"
-import Header from "./menu-link/Header.vue";
+
 </script>
 
-<style>
-
-</style>
+<style></style>

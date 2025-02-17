@@ -1,4 +1,5 @@
 <template>
+  <div>
      <div class="footer-content">
         <div class="newsletter">
           <h4>Nhận khuyến mãi</h4>
@@ -58,6 +59,7 @@
       <div class="footer-bottom">
         <p>Copyright © 2024 SWE </p>
       </div>
+    </div>
 </template>
 
 <script>

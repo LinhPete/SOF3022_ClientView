@@ -1,5 +1,4 @@
 <template>
-  <Header></Header>
   <div class="boxspto">
     <p v-if="productStore.loading">Đang tải...</p>
     <p v-if="productStore.error" class="error">{{ productStore.error }}</p>
@@ -40,9 +39,6 @@
       </div>
     </div>
   </div>
-  <footer>
-    <Footer></Footer>
-  </footer>
 </template>
 
 <script setup>
