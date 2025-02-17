@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import axiosInstance from "../axios/asios";
 import { useProductStore } from "../stores/productStore";
-const productStore = useProductStore();
+// const productStore = useProductStore();
 export const useCartStore = defineStore("cart", {
   state: () => ({
     cart: JSON.parse(localStorage.getItem("cartInfo")) || [], // Load từ localStorage
@@ -93,6 +93,7 @@ export const useCartStore = defineStore("cart", {
 
         const updatedCartItems = await Promise.all(
           cartItems.map(async (item) => {
+            const productStore = useProductStore();
             const product = await productStore.fetchProductbyId(item.productId);
             return {
               ...item,

@@ -1,54 +1,37 @@
 <template>
-  <div>
-    <Header />
-    <div class="container-default">
-      <article>
-        <h1>Đăng nhập</h1>
-        <h2>____</h2>
-      </article>
-      <aside>
-        <div class="form-container">
-          <form @submit.prevent="handleLogin">
-            <div class="form-group">
-              <input
-                type="email"
-                id="email"
-                name="email"
-                placeholder="Email"
-                v-model="model.email"
-                required
-              />
-            </div>
-            <div class="form-group">
-              <input
-                type="password"
-                id="password"
-                name="password"
-                placeholder="Mật khẩu"
-                v-model="model.password"
-                required
-              />
-            </div>
+  <div class="container-default">
+    <article>
+      <h1>Đăng nhập</h1>
+      <h2>____</h2>
+    </article>
+    <aside>
+      <div class="form-container">
+        <form @submit.prevent="handleLogin">
+          <div class="form-group">
+            <input type="email" id="email" name="email" placeholder="Email" v-model="model.email" required />
+          </div>
+          <div class="form-group">
+            <input type="password" id="password" name="password" placeholder="Mật khẩu" v-model="model.password"
+              required />
+          </div>
 
-            <!-- Thông báo lỗi -->
-            <p v-if="userStore.message" class="error-message">
-              {{ userStore.message }}
-            </p>
+          <!-- Thông báo lỗi -->
+          <p v-if="userStore.message" class="error-message">
+            {{ userStore.message }}
+          </p>
 
-            <!-- Nút Đăng nhập -->
-            <button type="submit" class="submit-btn">ĐĂNG NHẬP</button>
+          <!-- Nút Đăng nhập -->
+          <button type="submit" class="submit-btn">ĐĂNG NHẬP</button>
 
-            <!-- Link Quên mật khẩu & Đăng ký -->
-            <div class="links">
-              <router-link to="/forgot-password">Quên mật khẩu?</router-link>
-              <span>hoặc</span>
-              <router-link to="/register">Đăng ký</router-link>
-            </div>
-          </form>
-        </div>
-      </aside>
-    </div>
-    <Footer />
+          <!-- Link Quên mật khẩu & Đăng ký -->
+          <div class="links">
+            <router-link to="/forgot-password">Quên mật khẩu?</router-link>
+            <span>hoặc</span>
+            <router-link to="/register">Đăng ký</router-link>
+          </div>
+        </form>
+      </div>
+    </aside>
   </div>
 </template>
 

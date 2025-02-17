@@ -1,5 +1,4 @@
 <template>
-        <Header></Header>
     <section>
         <div class="boxduongdan">
             <div class="duongdan">
@@ -61,15 +60,10 @@
             </div>
         </div>
     </section>
-
-    <footer>
-        <Footer></Footer>
-    </footer>
 </template>
 
 <script setup>
-import Header from "./menu-link/Header.vue";
-import Footer from "./menu-link/Footer.vue"
+
 </script>
 
 <style>

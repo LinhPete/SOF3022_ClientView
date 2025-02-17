@@ -1,6 +1,5 @@
 <template>
   <div>
-    <Header></Header>
     <Carousel></Carousel>
     <aside>
       <div class="odichvu">
@@ -62,9 +61,6 @@
         </div>
       </div>
     </div>
-    <footer>
-      <Footer></Footer>
-    </footer>
   </div>
 </template>
 

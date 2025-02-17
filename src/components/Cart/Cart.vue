@@ -1,6 +1,5 @@
 <template>
   <div>
-    <Header />
     <aside v-if="cartStore.cart.length > 0">
       <div class="giohang">
         <div class="sanphamgiohang">
@@ -77,8 +76,6 @@
     <div v-else>
       <p>Giỏ hàng của bạn đang trống.</p>
     </div>
-
-    <Footer />
   </div>
 </template>
 
