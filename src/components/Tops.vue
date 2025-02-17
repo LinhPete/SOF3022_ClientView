@@ -1,4 +1,5 @@
 <template>
+    <div>
     <header>
         <Header></Header>
     </header>
@@ -68,6 +69,7 @@
     <footer>
         <Footer></Footer>
     </footer>
+</div>
 </template>
 
 <script setup>
