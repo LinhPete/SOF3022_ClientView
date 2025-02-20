@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
+import { useCartStore } from "../stores/cartStore";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -24,14 +25,14 @@ const router = createRouter({
       component: () => import("../components/User/QuenMatKhau.vue"),
     },
     {
-      path: "/payment",
-      name: "payment",
+      path: "/card",
+      name: "card",
       component: () => import("../components/Cart/Cart.vue"),
     },
     {
-      path: "/newarrival",
-      name: "newarrival",
-      component: () => import("../components/NewArrival.vue"),
+      path: "/payment",
+      name: "payment",
+      component: () => import("../components/Payment/PaymentForm.vue"),
     },
     {
       path: "/Accessories",
@@ -70,15 +71,15 @@ const router = createRouter({
     },
     {
       path: "/category/:id",
-      name: "CategoryDetail",
+      name: "Category Detail",
       component: () => import("../components/Category/CategoryDetail.vue"),
       props: true, // Giúp truyền param 'id' vào component dưới dạng prop
     },
     {
-      path: "/product-detail/:id",
+      path: "/product/:id",
       name: "Product Detail",
       component: () => import("../components/Product/ProductDetail.vue"),
-      // props: true,
+      props: true,
     },
   ],
 });

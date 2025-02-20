@@ -1,31 +1,38 @@
 <template>
   <div>
     <Header />
-    <aside v-if="cartStore.cart.length > 0">
+    <aside v-if="cartItems.length > 0">
       <div class="giohang">
         <div class="sanphamgiohang">
           <div class="boxduongdan">
             <div class="duongdan" style="width: 90%">
-              <label for=""
-                >Có <b>{{ cartStore.cart.length }} sản phẩm</b> trong giỏ
-                hàng</label
-              >
+              <label>
+                Có <b>{{ cartItems.length }} sản phẩm</b> trong giỏ hàng
+              </label>
             </div>
           </div>
-          <div v-for="(item, index) in cartStore.cart" :key="item.id">
+          <div v-for="(item, index) in cartItems" :key="item.productId">
             <div class="khunggiohang">
               <div class="hinh">
-                <img :src="getProdImg(item.productId)" :alt="item.name" />
+                <img
+                  :src="getProdInfo(item.productId).image"
+                  :alt="getProdInfo(item.productId).name"
+                />
               </div>
               <div class="tenvagia">
                 <label
-                  ><b>{{ item.name }}</b></label
+                  ><b>{{ getProdInfo(item.productId).name }}</b></label
                 >
                 <div class="duongdan" style="padding-top: 7px">
-                  <label>{{ formatCurrency(item.price) }}</label>
+                  <label>{{
+                    formatCurrency(getProdInfo(item.productId).price)
+                  }}</label>
                 </div>
                 <div class="quantity-control">
-                  <button @click="decreaseQuantity(index)" class="quantity-btn">
+                  <button
+                    @click="updateQuantity(item.productId, -1)"
+                    class="quantity-btn"
+                  >
                     -
                   </button>
                   <input
@@ -34,7 +41,10 @@
                     v-model="item.quantity"
                     readonly
                   />
-                  <button @click="increaseQuantity(index)" class="quantity-btn">
+                  <button
+                    @click="updateQuantity(item.productId, 1)"
+                    class="quantity-btn"
+                  >
                     +
                   </button>
                 </div>
@@ -42,11 +52,13 @@
               <div class="xoagiohang">
                 <i
                   class="fa-solid fa-delete-left"
-                  @click="removeItem(index)"
+                  @click="cartStore.removeFromCart(index, item.id)"
                 ></i>
                 <label
                   ><b>{{
-                    formatCurrency(item.price * item.quantity)
+                    formatCurrency(
+                      item.quantity * getProdInfo(item.productId).price
+                    )
                   }}</b></label
                 >
               </div>
@@ -54,7 +66,6 @@
             <hr />
           </div>
         </div>
-
         <div class="thanhtoan">
           <div class="boxthanhtoan">
             <div class="thanhtoannho">
@@ -67,83 +78,67 @@
                 </div>
               </div>
               <hr />
-              <button @click="checkout">THANH TOÁN</button>
+              <router-link to="/payment">
+                <button @click="checkout">THANH TOÁN</button>
+              </router-link>
             </div>
           </div>
         </div>
       </div>
     </aside>
-
-    <div v-else>
-      <p>Giỏ hàng của bạn đang trống.</p>
-    </div>
-
     <Footer />
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { computed, onMounted } from "vue";
 import { useCartStore } from "../../stores/cartStore";
+import { useProductStore } from "../../stores/productStore";
 import Header from "../menu-link/Header.vue";
 import Footer from "../menu-link/Footer.vue";
-import { useProductStore } from "../../stores/productStore";
-// Sử dụng store để truy cập giỏ hàng
-const cartStore = useCartStore();
-const note = ref("");
-
-onMounted(() => {
-  cartStore.fetchCart();
-});
-
-const increaseQuantity = (index) => {
-  const item = cartStore.cart[index];
-  if (item) {
-    cartStore.updateQuantity(index, item.quantity + 1);
-  }
-};
-
-const decreaseQuantity = (index) => {
-  const item = cartStore.cart[index];
-  if (item && item.quantity > 1) {
-    cartStore.updateQuantity(index, item.quantity - 1);
-  }
-};
-
-const totalPrice = computed(() => {
-  return (
-    cartStore.cart?.reduce(
-      (sum, item) => sum + (item.price || 0) * (item.quantity || 1),
-      0
-    ) || 0
-  );
-});
 
 const productStore = useProductStore();
+const cartStore = useCartStore();
+const cartItems = computed(() => cartStore.cart);
 
-const getProdImg = computed(() => (prodId) => {
-  const product = productStore.products.find((p) => p.id === prodId);
-  return product?.image ?? "path/to/default/image.jpg";
+onMounted(async () => {
+  await cartStore.fetchCart();
+  await Promise.all(
+    cartStore.cart.map(async (item) => {
+      if (!productMap.value[item.productId]) {
+        const prod = await productStore.fetchProductbyId(item.productId);
+      }
+    })
+  );
 });
+const productMap = computed(() =>
+  productStore.products.reduce((map, product) => {
+    map[product.id] = product;
+    return map;
+  }, {})
+);
 
-const formatCurrency = (value) => {
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
-  }).format(value);
+const getProdInfo = (productId) =>
+  productMap.value[productId] || { name: "Đang tải...", price: 0, image: "" };
+
+const updateQuantity = async (productId, delta) => {
+  await cartStore.updateQuantity(productId, delta);
 };
 
-const removeItem = (index) => {
-  cartStore.removeFromCart(index);
-  cartStore.fetchCart();
-};
+const totalPrice = computed(() =>
+  cartItems.value.reduce(
+    (sum, item) => sum + item.quantity * getProdInfo(item.productId).price,
+    0
+  )
+);
 
-const checkout = () => {
-  if (!cartStore.cart.length) {
-    alert("Giỏ hàng trống, không thể thanh toán!");
-    return;
-  }
-  // Nếu chưa có phương thức checkout, bạn có thể gọi API hoặc xử lý đặt hàng tại đây
-  console.log("Chức năng thanh toán đang được phát triển...");
+const formatCurrency = (value) =>
+  new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(
+    value
+  );
+
+const checkout = async () => {
+  await cartStore.updateCart();
+  router.push("payment");
 };
 </script>

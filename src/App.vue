@@ -11,7 +11,7 @@ import { RouterView } from "vue-router";
     <!-- <DangNhap></DangNhap> -->
     <!-- <ThanhToan></ThanhToan> -->
     <!-- <TrangChu></TrangChu> -->
-    <RouterView />
+    <router-view :key="$route.fullPath"></router-view>
   </div>
 </template>
 

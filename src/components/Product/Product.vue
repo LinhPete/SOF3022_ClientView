@@ -15,7 +15,7 @@
           :key="product.id"
         >
           <div class="sale">{{ product.discount }}%</div>
-          <router-link :to="`/product-detail/${product.id}`">
+          <router-link :to="`/product/${product.id}`">
             <img :src="product.image" :alt="product.name" />
           </router-link>
           <div class="tensp">
@@ -57,16 +57,14 @@
 
 <script setup>
 import { onMounted } from "vue";
-import { useProductStore } from "../../stores/productStore";
-import { useCartStore } from "../../stores/cartStore";
+import { useProductStore } from "../../stores/productStore"; // Giả sử bạn đã tạo store cho sản phẩm
 const productStore = useProductStore();
-const cartStore = useCartStore();
-onMounted(() => {
-  productStore.fetchProduct();
+onMounted(async () => {
+  await productStore.fetchProduct();
 });
 </script>
 
-<style>
+<style scoped>
 .error {
   color: red;
 }

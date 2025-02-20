@@ -1,7 +1,6 @@
 <template>
   <div>
     <Header></Header>
-
     <div class="container-default-DK">
       <article>
         <h1>Tạo tài khoản</h1>
@@ -28,7 +27,7 @@
                 v-model="user.lastName"
               />
             </div>
-            <!-- <div class="form-group">
+            <div class="form-group">
               <label
                 ><input
                   type="radio"
@@ -46,7 +45,16 @@
                 Nam</label
               >
               <label></label>
-            </div> -->
+            </div>
+            <div class="form-group">
+              <input
+                type="text"
+                id="phoneNumber"
+                name="phoneNumber"
+                placeholder="Số điện thoại"
+                v-model="user.phone"
+              />
+            </div>
             <div class="form-group">
               <input type="date" id="dob" name="dob" v-model="user.birthday" />
             </div>
@@ -110,9 +118,10 @@ import Header from "../menu-link/Header.vue";
 import { useUserStore } from "../../stores/userStore";
 import { ref } from "vue";
 import { useRouter } from "vue-router"; // Thêm import này
-
+import { useToast } from "vue-toast-notification";
 const router = useRouter(); // Khai báo router
 const userStore = useUserStore();
+const toast = useToast();
 const user = ref({
   email: "",
   password: "",
@@ -120,6 +129,7 @@ const user = ref({
   firstName: "",
   lastName: "",
   birthday: "",
+  phone: "",
 });
 
 const handleRegister = async () => {
@@ -128,9 +138,16 @@ const handleRegister = async () => {
     !user.value.password ||
     !user.value.firstName ||
     !user.value.lastName ||
-    !user.value.birthday
+    !user.value.birthday ||
+    !user.value.phone
   ) {
-    alert("Vui lòng nhập đầy đủ thông tin!");
+    toast.open({
+      message: "Vui lòng nhập đầy đủ thông tin!",
+      type: "warning",
+      duration: 3000,
+      position: "top-right",
+    });
+    return;
     return;
   }
 
@@ -141,17 +158,27 @@ const handleRegister = async () => {
       password: user.value.password,
       firstName: user.value.firstName,
       lastName: user.value.lastName,
+      phone: user.value.phone,
       birthday: new Date(user.value.birthday).toISOString().split("T")[0],
     });
 
     if (success) {
-      alert("Đăng ký và đăng nhập thành công");
-      router.push("/"); // Chuyển hướng về trang chủ
+      toast.open({
+        message: "Đăng ký và đăng nhập thành công",
+        type: "success",
+        duration: 3000,
+        position: "top-right",
+      });
+      router.push("/");
     } else {
-      alert("Đăng ký hoặc đăng nhập thất bại");
+      toast.open({
+        message: "Đăng ký hoặc đăng nhập thất bại",
+        type: "error",
+        duration: 3000,
+        position: "top-right",
+      });
     }
   } catch (error) {
-    alert("Đã có lỗi xảy ra");
     console.error("Lỗi khi đăng ký:", error);
   }
 };

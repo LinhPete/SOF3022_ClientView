@@ -1,11 +1,12 @@
-.container-default-DK{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 70%;
-    margin: 0 auto;
+.container-default-DK {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 70%;
+  margin: 20 auto;
+  padding-top: 20px;
 }
 .container-default-NA {
-    display: flex;
-    flex-direction: column; /* Sắp xếp theo chiều dọc */
+  display: flex;
+  flex-direction: column; /* Sắp xếp theo chiều dọc */
 }

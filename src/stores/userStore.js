@@ -1,6 +1,8 @@
 import { defineStore } from "pinia";
 import axiosInstance from "../axios/asios";
-
+import { useToast } from "vue-toast-notification";
+import { useCartStore } from "./cartStore";
+import { useProductStore } from "./productStore";
 export const useUserStore = defineStore("user", {
   state: () => ({
     userInfo: JSON.parse(localStorage.getItem("userInfo")) || null,
@@ -11,23 +13,26 @@ export const useUserStore = defineStore("user", {
   actions: {
     // Xử lý đăng nhập
     async handleLogin(email, password) {
+      const Toast = useToast();
       try {
         const response = await axiosInstance.post("/store/auth/token", {
           email,
           password,
         });
-
         const token = response.data.result.token;
         this.token = token;
         localStorage.setItem("token", token);
-
-        this.message = "Đăng nhập thành công!";
-
         // Lấy thông tin người dùng sau khi đăng nhập
         await this.fetchUserInfo();
         return true;
       } catch (error) {
         this.message = error.response?.data?.message || "Đăng nhập thất bại!";
+        Toast.open({
+          message: "Đăng nhập thất bại sai thông tin.Vui lòng nhập lại",
+          type: "error",
+          duration: 2000,
+          position: "top-right",
+        });
         console.error("Lỗi khi đăng nhập:", error);
         return false;
       }
@@ -36,20 +41,16 @@ export const useUserStore = defineStore("user", {
     // Đăng ký và tự động đăng nhập
     async registerAndLogin(userInfo) {
       try {
-        console.log("Bắt đầu đăng ký...");
         const registerResponse = await axiosInstance.post(
           "/store/users",
           userInfo
         );
-
         if (registerResponse.data) {
-          // Đăng ký thành công, tiến hành đăng nhập
           return await this.handleLogin(userInfo.email, userInfo.password);
         } else {
           throw new Error("Đăng ký không thành công.");
         }
       } catch (error) {
-        console.error("Lỗi khi đăng ký:", error);
         return false;
       }
     },
@@ -58,10 +59,8 @@ export const useUserStore = defineStore("user", {
     async fetchUserInfo() {
       try {
         if (!this.token) {
-          // console.warn("Không có token, không thể lấy thông tin người dùng.");
           return;
         }
-
         const response = await axiosInstance.get("/store/users/myInfo", {
           headers: { Authorization: `Bearer ${this.token}` },
         });
@@ -77,11 +76,30 @@ export const useUserStore = defineStore("user", {
     },
 
     // Đăng xuất
-    logout() {
-      this.token = null;
-      this.userInfo = null;
-      localStorage.removeItem("token");
-      localStorage.removeItem("userInfo");
+    async logout() {
+      try {
+        const token = localStorage.getItem("token"); // Lấy token từ localStorage
+        const Toast = useToast();
+        if (token) {
+          Toast.open({
+            message: "Bạn đã đăng xuất",
+            type: "success",
+            duration: 3000,
+            position: "top-right",
+          });
+          localStorage.removeItem("userInfo");
+          localStorage.removeItem("token");
+          const cartStore = useCartStore();
+          const productStore = useProductStore();
+          productStore.resetProduct();
+          cartStore.resetCart();
+          this.userInfo = null;
+        } else {
+          console.log("Không có token để đăng xuất.");
+        }
+      } catch (error) {
+        console.error("Lỗi khi đăng xuất:", error);
+      }
     },
   },
 });
