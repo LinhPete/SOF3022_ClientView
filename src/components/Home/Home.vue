@@ -33,7 +33,7 @@
         </div>
       </div>
     </aside>
-    <Product></Product>
+    <Product />
     <div class="ochuafb">
       <div class="feedback-section">
         <div class="khungfb1">
@@ -71,10 +71,19 @@ import Header from "../menu-link/Header.vue";
 import Carousel from "../menu-link/Carousel.vue";
 import Product from "../Product/Product.vue";
 import { useCartStore } from "../../stores/cartStore";
+import { useProductStore } from "../../stores/productStore";
+
 // Sử dụng store để truy cập giỏ hàng
 const cartStore = useCartStore();
+const productStore = useProductStore();
+// Lifecycle hook onMounted
 onMounted(() => {
+  // Khi component được mount, thực hiện fetch giỏ hàng
   cartStore.fetchCart();
+  productStore.fetchProduct();
 });
 </script>
-<style></style>
+
+<style scoped>
+/* Các kiểu CSS của trang Home */
+</style>

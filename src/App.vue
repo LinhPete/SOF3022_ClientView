@@ -14,8 +14,8 @@ import Footer from "./components/menu-link/Footer.vue";
     <!-- <DangNhap></DangNhap> -->
     <!-- <ThanhToan></ThanhToan> -->
     <!-- <TrangChu></TrangChu> -->
-    <RouterView />
-    <Footer></Footer>
+    <router-view :key="$route.fullPath"></router-view>
+<Footer></Footer>
   </div>
 </template>
 

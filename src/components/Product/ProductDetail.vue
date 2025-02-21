@@ -52,6 +52,59 @@ const route = useRoute();
 const productStore = useProductStore();
 
 onMounted(async () => {
-  await productStore.fetchProductbyId(route.params.id);
+  // Kiểm tra nếu sản phẩm đã có trong cache thì dùng nó
+  const productId = parseInt(route.params.id);
+  if (!productStore.product || productStore.product.id !== productId) {
+    await productStore.fetchProductbyId(productId);
+  }
 });
 </script>
+
+<style scoped>
+.error {
+  color: red;
+}
+
+.boxspto {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+.boxsp {
+  width: 80%;
+  padding: 20px;
+  border: 1px solid #ddd;
+  background-color: #fff;
+}
+
+.sp img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.sale {
+  color: red;
+  font-weight: bold;
+}
+
+.tensp h2 {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.price {
+  font-size: 20px;
+  color: green;
+}
+
+.danhgia i {
+  color: #ff4d4f;
+}
+
+footer {
+  margin-top: 30px;
+}
+</style>

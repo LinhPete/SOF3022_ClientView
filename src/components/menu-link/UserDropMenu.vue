@@ -3,10 +3,11 @@
     <!-- ICON USER -->
     <div @click="toggleDropdown" class="user-icon">
       <i class="fa-regular fa-user fa-xl"></i>
-      <span v-if="userStore.userInfo" style="padding-left: 15px">{{
-        userStore.userInfo.fullName
-      }}</span>
+      <span v-if="userStore.userInfo" style="padding-left: 15px">
+        {{ userStore.userInfo.fullName }}
+      </span>
     </div>
+
     <!-- DROPDOWN MENU -->
     <div v-if="isOpen" class="dropdown">
       <p v-if="!userStore.userInfo">
@@ -21,7 +22,7 @@
         >
       </p>
       <p v-if="userStore.userInfo">
-        <button @click="logout()" class="dropdown-item">Đăng xuất</button>
+        <button @click="logout" class="dropdown-item">Đăng xuất</button>
       </p>
     </div>
   </div>
@@ -31,29 +32,30 @@
 import { ref, onMounted } from "vue";
 import { useUserStore } from "../../stores/userStore";
 import { useRouter } from "vue-router";
-import { useCartStore } from "../../stores/cartStore";
-const userStore = useUserStore();
-const cartStore = useCartStore();
+
 const router = useRouter();
+const userStore = useUserStore();
 const isOpen = ref(false);
 
+// Toggle dropdown menu
 const toggleDropdown = () => {
   isOpen.value = !isOpen.value;
 };
-
-// Hàm đăng xuất
+// Đăng xuất người dùng và chuyển hướng về trang đăng nhập
 const logout = () => {
-  isOpen.value = false;
-  cartStore.logout();
-  router.push("/login"); // Sau khi logout, chuyển hướng về trang đăng nhập
+  isOpen.value = false; // Đóng dropdown
+  userStore.logout(); // Xóa giỏ hàng khi đăng xuất
+  setTimeout(() => {
+    router.push("/login");
+  }, 1500);
 };
 
-// Gọi hàm fetchUserInfo khi mounted
-onMounted(() => {
-  if (!userStore.userInfo) {
-    userStore.fetchUserInfo();
-  }
-});
+// Lấy thông tin người dùng khi component được mount
+// onMounted(() => {
+//   if (!userStore.userInfo) {
+//     userStore.fetchUserInfo();
+//   }
+// }
 </script>
 
 <style scoped>

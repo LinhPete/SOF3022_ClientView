@@ -61,7 +61,7 @@
         <div class="boxsp" v-if="!productStore.loading && !productStore.error">
           <div
             class="sp"
-            v-for="product in productStore.products"
+            v-for="product in productsByCategory"
             :key="product.id"
           >
             <div class="sale">{{ product.discount }}%</div>
@@ -105,44 +105,56 @@
 </template>
 
 <script setup>
-import { onMounted, ref, defineProps } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
+import { useRoute } from "vue-router";
 import Header from "../menu-link/Header.vue";
 import Footer from "../menu-link/Footer.vue";
 import { useCategoryStore } from "../../stores/categoryStrore";
 import { useProductStore } from "../../stores/productStore";
-// Khai báo prop nhận từ route (giả sử là id của danh mục)
-const props = defineProps({
-  id: {
-    type: String,
-    required: true,
-  },
-});
 
-// Khởi tạo store danh mục và store sản phẩm
+// Sử dụng route để lấy id từ URL
+const route = useRoute();
+const categoryId = ref(route.params.id || ""); // Lấy ID từ route
+
 const categoryStore = useCategoryStore();
 const productStore = useProductStore();
 
-// Biến chứa tên danh mục hiển thị trong breadcrumb và tiêu đề
 const categoryName = ref("");
 
-// Khi component được mounted, fetch dữ liệu danh mục và sản phẩm theo id
-onMounted(async () => {
-  // Nếu danh sách danh mục chưa được load, gọi API lấy danh mục
+async function loadCategory(id) {
   if (categoryStore.categories.length === 0) {
     await categoryStore.fetchCategory();
   }
-  // Tìm danh mục có id trùng với prop truyền vào
-  const cat = categoryStore.categories.find(
-    (category) => category.id == props.id
-  );
-  // Nếu tìm thấy, lấy tên danh mục; nếu không, sử dụng giá trị mặc định
+  const cat = categoryStore.categories.find((category) => category.id == id);
   categoryName.value = cat ? cat.name : "Danh mục";
+}
 
-  // Gọi API lấy danh sách sản phẩm của danh mục (giả sử fetchProduct nhận tham số id)
-  await productStore.fetchProduct(props.id);
+// Dùng computed() để lọc sản phẩm theo categoryId
+const productsByCategory = computed(() => {
+  let products = productStore.products;
+
+  if (!products.length) {
+    // Nếu store chưa có sản phẩm, lấy từ localStorage
+    const storedProducts = localStorage.getItem("products");
+    if (storedProducts) {
+      products = JSON.parse(storedProducts);
+    }
+  }
+
+  // Lọc sản phẩm theo categoryId
+  return products.filter((product) => product.categoryId == categoryId.value);
 });
+watch(
+  () => route.params.id,
+  async (newId) => {
+    if (newId) {
+      categoryId.value = newId;
+      await loadCategory(newId);
+    }
+  },
+  { immediate: true }
+);
 </script>
-
 <style>
 /* Giữ nguyên style của bạn */
 .error {

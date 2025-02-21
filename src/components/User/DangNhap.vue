@@ -15,11 +15,10 @@
               required />
           </div>
 
-          <!-- Thông báo lỗi -->
-          <p v-if="userStore.message" class="error-message">
-            {{ userStore.message }}
-          </p>
-
+            <!-- Thông báo lỗi -->
+            <!-- <p v-if="userStore.message" class="error-message">
+              {{ userStore.message }}
+            </p> -->
           <!-- Nút Đăng nhập -->
           <button type="submit" class="submit-btn">ĐĂNG NHẬP</button>
 
@@ -41,25 +40,40 @@ import { useUserStore } from "../../stores/userStore";
 import Header from "../menu-link/Header.vue";
 import Footer from "../menu-link/Footer.vue";
 const userStore = useUserStore();
+import { useToast } from "vue-toast-notification";
 import { useRouter } from "vue-router";
+import { useProductStore } from "../../stores/productStore";
 const router = useRouter();
+const toast = useToast();
 const model = ref({
   email: "",
   password: "",
 });
-
+const productStore = useProductStore();
 const handleLogin = async () => {
   const success = await userStore.handleLogin(
     model.value.email,
     model.value.password
   );
   if (success) {
-    router.push("/"); // Chuyển hướng sau khi đăng nhập thành công
+    toast.open({
+      message: "Đăng nhập thành công",
+      type: "success",
+      duration: 2000,
+      position: "top-right",
+    });
+    router.push("/");
+    await productStore.fetchProduct(); // Chuyển hướng sau khi đăng nhập thành công
   }
 };
 </script>
 
-<style>
+<style scoped>
+.vue-toast-notification-container.center {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
 /* Thêm CSS tùy chỉnh */
 .form-container {
   max-width: 400px;
