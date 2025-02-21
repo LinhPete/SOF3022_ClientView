@@ -1,6 +1,5 @@
 <template>
   <div>
-    <Header />
     <aside v-if="cartItems.length > 0">
       <div class="giohang">
         <div class="sanphamgiohang">
