@@ -1,4 +1,5 @@
 <template>
+  <div>
   <div class="dongdau">
     <p>
       Miễn phí vận chuyển với đơn hàng trên 500K. Hàng pre-order còn được giảm
@@ -27,7 +28,8 @@
       </div>
     </div>
   </div>
-  <Menu />
+  <Menu></Menu>
+</div>
 </template>
 
 <script setup>

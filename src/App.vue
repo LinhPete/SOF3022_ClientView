@@ -5,13 +5,17 @@
 // import TrangChu from "./components/TrangChu.vue";
 // import QuenMatKhau from "./components/QuenMatKhau.vue";
 import { RouterView } from "vue-router";
+import Header from "./components/menu-link/header.vue";
+import Footer from "./components/menu-link/Footer.vue";
 </script>
 <template>
   <div>
+    <Header></Header>
     <!-- <DangNhap></DangNhap> -->
     <!-- <ThanhToan></ThanhToan> -->
     <!-- <TrangChu></TrangChu> -->
     <router-view :key="$route.fullPath"></router-view>
+<Footer></Footer>
   </div>
 </template>
 

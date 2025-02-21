@@ -86,7 +86,9 @@
         </div>
       </div>
     </aside>
-    <Footer />
+    <div v-else>
+      <p>Giỏ hàng của bạn đang trống.</p>
+    </div>
   </div>
 </template>
 

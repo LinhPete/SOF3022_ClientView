@@ -1,7 +1,4 @@
 <template>
-  <div>
-    <Header></Header>
-
     <div class="container-default">
       <article>
         <h1>Phục hồi mật khẩu</h1>
@@ -49,8 +46,6 @@
         </div>
       </aside>
     </div>
-    <Footer></Footer>
-  </div>
 </template>
 
 <script setup>

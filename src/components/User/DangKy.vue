@@ -1,6 +1,5 @@
 <template>
   <div>
-    <Header></Header>
     <div class="container-default-DK">
       <article>
         <h1>Tạo tài khoản</h1>
@@ -106,9 +105,6 @@
         </div>
       </aside>
     </div>
-    <footer>
-      <Footer></Footer>
-    </footer>
   </div>
 </template>
 
