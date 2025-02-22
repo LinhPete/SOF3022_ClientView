@@ -2,10 +2,9 @@
   <div class="boxspto">
     <p v-if="productStore.loading">Đang tải...</p>
     <p v-if="productStore.error" class="error">{{ productStore.error }}</p>
-    
+
     <div class="boxsp" v-if="!productStore.loading && productStore.product">
       <div class="product-container">
-        <!-- Hình ảnh sản phẩm -->
         <div class="image-section">
           <div class="thumbnail-container">
             <img
@@ -21,17 +20,23 @@
             <div class="sale" v-if="productStore.product.discount">
               -{{ productStore.product.discount }}%
             </div>
-            <img :src="productStore.product.image" :alt="productStore.product.name" class="main-image" />
+            <img
+              :src="productStore.product.image"
+              :alt="productStore.product.name"
+              class="main-image"
+            />
           </div>
         </div>
-
-        <!-- Thông tin sản phẩm -->
         <div class="info-section">
           <h2 class="product-title">{{ productStore.product.name }}</h2>
-          
+
           <div class="price">
-            <span class="sale-price">{{ productStore.product.salePrice }}₫</span>
-            <del class="original-price">{{ productStore.product.originalPrice }}₫</del>
+            <span class="sale-price"
+              >{{ productStore.product.salePrice }}₫</span
+            >
+            <del class="original-price"
+              >{{ productStore.product.originalPrice }}₫</del
+            >
           </div>
 
           <div class="danhgia">
@@ -39,19 +44,31 @@
               v-for="star in 5"
               :key="star"
               class="fa-solid fa-star fa-2xs"
-              :style="{ color: star <= productStore.product.rating ? '#ff4d4f' : '#ccc' }"
+              :style="{
+                color: star <= productStore.product.rating ? '#ff4d4f' : '#ccc',
+              }"
             ></i>
-            <span class="review-count">({{ productStore.product.reviews }} lượt đánh giá)</span>
+            <span class="review-count"
+              >({{ productStore.product.reviews }} lượt đánh giá)</span
+            >
           </div>
 
           <div class="product-details">
-            <div><label>Thương hiệu:</label> {{ productStore.product.author }}</div>
-            <div><label>Danh mục:</label> {{ productStore.product.categoryName }}</div>
+            <div>
+              <label>Thương hiệu:</label> {{ productStore.product.author }}
+            </div>
+            <div>
+              <label>Danh mục:</label> {{ productStore.product.categoryName }}
+            </div>
             <div><label>Giá:</label> {{ productStore.product.price }} USD</div>
-            <div><label>Ngày mở bán:</label> {{ productStore.product.publishDate }}</div>
+            <div>
+              <label>Ngày mở bán:</label> {{ productStore.product.publishDate }}
+            </div>
           </div>
 
-          <p class="description"><label>Mô tả:</label> {{ productStore.product.description }}</p>
+          <p class="description">
+            <label>Mô tả:</label> {{ productStore.product.description }}
+          </p>
         </div>
       </div>
     </div>
@@ -61,17 +78,12 @@
 <script setup>
 import { onMounted } from "vue";
 import { useRoute } from "vue-router";
-import Header from "../menu-link/Header.vue";
-import Footer from "../menu-link/Footer.vue";
 import { useProductStore } from "../../stores/productStore";
 
 const route = useRoute();
 const productStore = useProductStore();
 
 onMounted(async () => {
-  // Kiểm tra nếu sản phẩm đã có trong cache thì dùng nó
-  console.log("route.params.id:", route.params.id);
-  console.log("Route object:", route);
   const productId = parseInt(route.params.id);
   if (!productStore.product || productStore.product.id !== productId) {
     await productStore.fetchProductbyId(productId);
@@ -80,7 +92,6 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-
 .product-info {
   flex: 1;
   display: flex;
@@ -98,7 +109,6 @@ onMounted(async () => {
   font-weight: bold;
   margin-right: 5px;
 }
-
 
 .error {
   color: red;
@@ -169,4 +179,3 @@ onMounted(async () => {
   flex: 1;
 }
 </style>
-
