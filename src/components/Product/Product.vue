@@ -4,9 +4,13 @@
     <div class="boxspto">
       <p v-if="productStore.loading">Đang tải...</p>
       <p v-if="productStore.error" class="error">{{ productStore.error }}</p>
+
       <div class="boxsp" id="spmoinhat" v-if="!productStore.loading && !productStore.error">
-        <div class="sp" v-for="product in productStore.products" :key="product.id">
-          
+        <div 
+          class="sp" 
+          v-for="product in displayedProducts" 
+          :key="product.id"
+        >
           <!-- Sale Label -->
           <div class="sale" v-if="product.discount">-{{ product.discount }}%</div>
 
@@ -49,16 +53,22 @@
 </template>
 
 <script setup>
-import { onMounted } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useProductStore } from "../../stores/productStore";
-import { useCartStore } from "../../stores/cartStore"; 
+import { useCartStore } from "../../stores/cartStore";
 
 const productStore = useProductStore();
 const cartStore = useCartStore();
 
+const currentPage = ref(1);
+
+// Lấy danh sách sản phẩm theo trang hiện tại
+const displayedProducts = computed(() => productStore.products[currentPage.value] || []);
+
 onMounted(async () => {
-  await productStore.fetchProduct();
+  await productStore.fetchProduct(currentPage.value);
 });
+
 </script>
 
 <style scoped>

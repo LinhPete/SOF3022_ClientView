@@ -70,6 +70,8 @@ const productStore = useProductStore();
 
 onMounted(async () => {
   // Kiểm tra nếu sản phẩm đã có trong cache thì dùng nó
+  console.log("route.params.id:", route.params.id);
+  console.log("Route object:", route);
   const productId = parseInt(route.params.id);
   if (!productStore.product || productStore.product.id !== productId) {
     await productStore.fetchProductbyId(productId);

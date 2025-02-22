@@ -1,55 +1,68 @@
 import { defineStore } from "pinia";
 import axiosInstance from "../axios/asios";
+
 export const useProductStore = defineStore("products", {
   state: () => ({
-    products: JSON.parse(localStorage.getItem("products")) || [],
+    products: (() => {
+      try {
+        return JSON.parse(localStorage.getItem("products")) || {};
+      } catch (e) {
+        return {};
+      }
+    })(),
     product: null,
+    loading: false,
+    error: null,
   }),
+
   actions: {
     async resetProduct() {
-      this.product = [];
+      this.products = {};
+      this.product = null;
       localStorage.removeItem("products");
     },
-    // Hàm lấy danh sách product
-    async fetchProduct() {
-      if (this.products && this.products.length > 0) return;
+
+    // Lấy danh sách sản phẩm theo trang
+    async fetchProduct(page = 1) {
+      if (this.products[page]) {
+        return;
+      }
+
       this.loading = true;
       this.error = null;
 
       try {
-        const response = await axiosInstance.get("/store/products");
-        this.products = response.data.result;
+        const response = await axiosInstance.get(`/store/products?page=${page}`);
+        const productsData = response.data.result || [];
+
+        this.products = { ...this.products, [page]: productsData };
         localStorage.setItem("products", JSON.stringify(this.products));
       } catch (error) {
-        this.error = "Không thể tải danh sách sản phẩm ";
+        this.error = "Không thể tải danh sách sản phẩm";
+        console.error("Lỗi fetchProduct:", error);
       } finally {
         this.loading = false;
       }
     },
-    async fetchProductbyId(productId) {
-      const cachedProduct = this.products.find((p) => p.id === productId);
-      if (cachedProduct) {
-        this.product = cachedProduct;
-        return cachedProduct;
-      }
 
-      try {
-        console.log("Fetching product with id:", productId);
-        const response = await axiosInstance.get(
-          `/store/products/${productId}`
-        );
-        const product = response.data.result || null;
-        if (product) {
-          // Thêm sản phẩm vừa lấy được vào mảng products để cache
-          this.products.push(product);
-          localStorage.setItem("products", JSON.stringify(this.products));
-          this.product = product;
-        }
-        return product;
-      } catch (error) {
-        console.error(`Lỗi khi lấy sản phẩm ID: ${productId}`, error);
+    // Lấy sản phẩm theo ID
+    async fetchProductbyId(productId) {
+      if (!productId || isNaN(productId)) {
+        console.error("fetchProductbyId nhận ID không hợp lệ:", productId);
         return null;
       }
-    },
+    
+      try {
+        const response = await axiosInstance.get(`/store/products/${productId}`);
+        this.product = response.data.result;
+        return this.product;
+      } catch (error) {
+        console.error(`Lỗi khi lấy sản phẩm ID: ${productId}`, error);
+        this.error = "Không thể lấy sản phẩm";
+        return null;
+      }
+    }
+    
+    
   },
 });
