@@ -1,7 +1,4 @@
 <template>
-  <header>
-    <Header></Header>
-  </header>
   <section>
     <div class="boxduongdan">
       <div class="duongdan">
@@ -10,12 +7,9 @@
         <span>Danh mục</span>
         <span>/</span>
         <span>{{ categoryName }}</span>
-        <!-- Sử dụng tên danh mục động -->
       </div>
     </div>
-
     <div class="container-default-NA">
-      <!-- Tiêu đề danh mục được hiển thị động -->
       <h1>{{ categoryName }}</h1>
 
       <div class="filter-container">
@@ -67,18 +61,11 @@
             v-for="product in productStore.products"
             :key="product.id"
           >
-            <div class="sale">{{ product.discount }}%</div>
-            <router-link :to="`/product-detail/${product.id}`">
+            <!-- <div class="sale">{{ product.discount }}%</div> -->
+            <router-link :to="`/product/${product.id}`">
               <img :src="product.image" :alt="product.name" />
             </router-link>
-            <div class="tensp">
-              <router-link :to="`/product/${product.id}`">
-                <label>{{ product.name }}</label>
-              </router-link>
-            </div>
-            <div class="price">
-              {{ product.salePrice }}₫ <del> {{ product.originalPrice }}₫</del>
-            </div>
+            <div class="price">{{ product.price }}đ</div>
             <div class="danhgia">
               <i
                 v-for="star in 5"
@@ -86,13 +73,13 @@
                 class="fa-solid fa-star fa-2xs"
                 :style="{ color: star <= product.rating ? '#ff4d4f' : '#ccc' }"
               ></i>
-              <label for="" style="font-size: 9px">
+              <label style="font-size: 9px">
                 ({{ product.reviews }} lượt đánh giá)
               </label>
             </div>
             <h2>{{ product.name }}</h2>
             <p><label>Thương Hiệu:</label> {{ product.author }}</p>
-            <p><label>Danh mục:</label> {{ product.categoryName }}</p>
+            <p><label>Danh mục:</label> {{ categoryName }}</p>
             <p><label>Mô tả:</label> {{ product.description }}</p>
             <p><label>Giá:</label> {{ product.price }} USD</p>
             <p><label>Ngày mở bán:</label> {{ product.publishDate }}</p>
@@ -100,63 +87,92 @@
         </div>
       </div>
 
-      <div class="boxspto">
-        <div class="boxsp" id="sptheonhasx"></div>
+      <!-- Phân trang -->
+      <div v-if="totalPages > 1" class="pagination">
+        <button
+          v-for="page in totalPages"
+          :key="page"
+          :class="{ active: page === currentPage }"
+          @click="changePage(page)"
+        >
+          {{ page }}
+        </button>
       </div>
     </div>
   </section>
-
-  <footer>
-    <Footer></Footer>
-  </footer>
 </template>
 
 <script setup>
-import { onMounted, ref, defineProps } from "vue";
-import Header from "./menu-link/Header.vue";
-import Footer from "./menu-link/Footer.vue";
-import { useCategoryStore } from "../stores/categoryStrore";
-import { useProductStore } from "../stores/productStore";
-// Khai báo prop nhận từ route (giả sử là id của danh mục)
-const props = defineProps({
-  id: {
-    type: String,
-    required: true,
-  },
-});
+import { ref, onMounted, watch } from "vue";
+import { useRoute } from "vue-router";
+import { useCategoryStore } from "../../stores/categoryStrore";
+import { useProductStore } from "../../stores/productStore";
 
-// Khởi tạo store danh mục và store sản phẩm
+const route = useRoute();
+const categoryId = ref(route.params.id || "");
 const categoryStore = useCategoryStore();
 const productStore = useProductStore();
 
-// Biến chứa tên danh mục hiển thị trong breadcrumb và tiêu đề
-const categoryName = ref("");
+const currentPage = ref(1);
+const totalPages = ref(1);
+const categoryName = ref("Danh mục");
 
-// Khi component được mounted, fetch dữ liệu danh mục và sản phẩm theo id
-onMounted(async () => {
-  // Nếu danh sách danh mục chưa được load, gọi API lấy danh mục
+async function loadCategory(id) {
   if (categoryStore.categories.length === 0) {
     await categoryStore.fetchCategory();
   }
-  // Tìm danh mục có id trùng với prop truyền vào
-  const cat = categoryStore.categories.find(
-    (category) => category.id == props.id
-  );
-  // Nếu tìm thấy, lấy tên danh mục; nếu không, sử dụng giá trị mặc định
+  const cat = categoryStore.categories.find((category) => category.id == id);
   categoryName.value = cat ? cat.name : "Danh mục";
+}
 
-  // Gọi API lấy danh sách sản phẩm của danh mục (giả sử fetchProduct nhận tham số id)
-  await productStore.fetchProduct(props.id);
+async function loadProducts() {
+  await productStore.fetchProductbyCategoryId(
+    categoryId.value,
+    currentPage.value
+  );
+  totalPages.value = productStore.totalPages;
+}
+
+onMounted(async () => {
+  await loadCategory(categoryId.value);
+  await loadProducts();
 });
+
+watch(
+  () => route.params.id,
+  async (newId) => {
+    if (newId) {
+      categoryId.value = newId;
+      currentPage.value = 1;
+      await loadCategory(newId);
+      await loadProducts();
+    }
+  }
+);
+
+async function changePage(page) {
+  currentPage.value = page;
+  await loadProducts();
+}
 </script>
 
-<style>
-/* Giữ nguyên style của bạn */
+<style scoped>
 .error {
   color: red;
 }
 .product-item {
-  /* Ví dụ style cho sản phẩm, bạn có thể điều chỉnh lại */
   margin-bottom: 1rem;
+}
+.pagination {
+  margin-top: 1rem;
+}
+.pagination button {
+  margin: 0 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+.pagination button.active {
+  font-weight: bold;
+  background-color: #f0f0f0;
 }
 </style>

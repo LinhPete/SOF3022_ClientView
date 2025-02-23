@@ -90,8 +90,8 @@ header {
 .menu {
   text-align: center;
   width: 80%;
-  margin: 15px auto;
-  font-size: 16px;
+  margin: 0px auto;
+  font-size: 14px;
   color: #00000098;
 }
 
@@ -104,7 +104,7 @@ header {
 
 .menu ul li {
   display: inline-block; /* Các mục sẽ nằm ngang */
-  margin-right: 30px; /* Khoảng cách giữa các mục */
+  margin-right: 5px; /* Khoảng cách giữa các mục */
 }
 
 .menu ul li:last-child {
@@ -113,11 +113,13 @@ header {
 
 .menu ul li a {
   text-decoration: none;
-  color: #00000098;
-  font-weight: 500;
-  transition: color 0.3s ease, transform 0.3s ease;
+  color: #000000;
+  font-weight: 400  ;
+  transition: color 0.5s ease, transform 0.3s ease;
 }
-
+.nav-item.active {
+  color: #aaa;
+}
 .menu ul li a:hover {
   color: #007bff;
   transform: scale(1.1);

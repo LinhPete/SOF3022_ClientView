@@ -6,76 +6,51 @@ const router = createRouter({
     {
       path: "/",
       name: "home",
-      component: () => import("../components/Home.vue"),
+      component: () => import("../components/Home/Home.vue"),
     },
     {
       path: "/login",
       name: "login",
-      component: () => import("../components/DangNhap.vue"),
+      component: () => import("../components/User/DangNhap.vue"),
     },
     {
       path: "/register",
       name: "register",
-      component: () => import("../components/DangKy.vue"),
+      component: () => import("../components/User/DangKy.vue"),
+    },
+    {
+      path: "/user-info",
+      name: "userInfo",
+      component: () => import("../components/User/UserInfo.vue"),
     },
     {
       path: "/forgot-password",
       name: "forgotpassword",
-      component: () => import("../components/QuenMatKhau.vue"),
+      component: () => import("../components/User/QuenMatKhau.vue"),
+    },
+    {
+      path: "/card",
+      name: "card",
+      component: () => import("../components/Cart/Cart.vue"),
     },
     {
       path: "/payment",
       name: "payment",
-      component: () => import("../components/ThanhToan.vue"),
-    },
-    {
-      path: "/newarrival",
-      name: "newarrival",
-      component: () => import("../components/NewArrival.vue"),
-    },
-    {
-      path: "/Accessories",
-      name: "Accessories",
-      component: () => import("../components/Accessories.vue"),
-    },
-    {
-      path: "/BestSelling",
-      name: "BestSelling",
-      component: () => import("../components/BestSelling.vue"),
-    },
-    {
-      path: "/Bottoms",
-      name: "Bottoms",
-      component: () => import("../components/Bottoms.vue"),
-    },
-    {
-      path: "/FashSale",
-      name: "FashSale",
-      component: () => import("../components/FashSale.vue"),
+      component: () => import("../components/Payment/PaymentForm.vue"),
     },
     {
       path: "/outerWear",
       name: "PuterWear",
-      component: () => import("../components/CategoryDetail.vue"),
-    },
-    {
-      path: "/SaleSaff",
-      name: "SaleSaff",
-      component: () => import("../components/SaleSaff.vue"),
-    },
-    {
-      path: "/Tops",
-      name: "Tops",
-      component: () => import("../components/Tops.vue"),
+      component: () => import("../components/Category/CategoryDetail.vue"),
     },
     {
       path: "/category/:id",
-      name: "CategoryDetail",
-      component: () => import("../components/CategoryDetail.vue"),
+      name: "Category Detail",
+      component: () => import("../components/Category/CategoryDetail.vue"),
       props: true, // Giúp truyền param 'id' vào component dưới dạng prop
     },
     {
-      path: "/product-detail/:id",
+      path: "/product/:id",
       name: "Product Detail",
       component: () => import("../components/Product/ProductDetail.vue"),
       props: true,

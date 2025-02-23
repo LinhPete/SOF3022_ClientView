@@ -1,12 +1,6 @@
 <template>
   <div>
-    <Header></Header>
-
     <div class="container-default-DK">
-      <article>
-        <h1>Tạo tài khoản</h1>
-        <h2>____</h2>
-      </article>
       <aside>
         <div class="form-container">
           <form @submit.prevent="handleRegister">
@@ -28,25 +22,33 @@
                 v-model="user.lastName"
               />
             </div>
-            <!-- <div class="form-group">
-              <label
-                ><input
+            <div class="form-group">
+              <label>
+                <input
                   type="radio"
                   name="gender"
-                  value="nu"
+                  :value="false"
                   v-model="user.gender"
                 />
                 Nữ
                 <input
                   type="radio"
                   name="gender"
-                  value="nam"
+                  :value="true"
                   v-model="user.gender"
                 />
-                Nam</label
-              >
-              <label></label>
-            </div> -->
+                Nam
+              </label>
+            </div>
+            <div class="form-group">
+              <input
+                type="text"
+                id="phoneNumber"
+                name="phoneNumber"
+                placeholder="Số điện thoại"
+                v-model="user.phone"
+              />
+            </div>
             <div class="form-group">
               <input type="date" id="dob" name="dob" v-model="user.birthday" />
             </div>
@@ -87,37 +89,35 @@
             <button type="submit" class="submit-btn">ĐĂNG KÝ</button>
 
             <!-- Link quay lại -->
-            <router-link to="/"><a class="back-link"
-              ><strong style="font-size: 14px; margin-right: 10px">← </strong
-              >Quay lại trang chủ</a> </router-link>
-            >
+            <router-link to="/"
+              ><a class="back-link"
+                ><strong style="font-size: 14px; margin-right: 10px">← </strong
+                >Quay lại trang chủ</a
+              >
+            </router-link>
           </form>
         </div>
       </aside>
     </div>
-    <footer>
-     <Footer></Footer>
-    </footer>
   </div>
 </template>
 
 <script setup>
-import Footer from "./menu-link/Footer.vue";
-import Header from "./menu-link/Header.vue";
-import { useUserStore } from "../stores/userStore";
+import { useUserStore } from "../../stores/userStore";
 import { ref } from "vue";
 import { useRouter } from "vue-router"; // Thêm import này
-
-
+import { useToast } from "vue-toast-notification";
 const router = useRouter(); // Khai báo router
 const userStore = useUserStore();
+const toast = useToast();
 const user = ref({
   email: "",
-  password: "",
-  confirmPassword: "", // Thêm trường xác nhận mật khẩu
+  password: "", // Thêm trường xác nhận mật khẩu
   firstName: "",
   lastName: "",
+  gender: false,
   birthday: "",
+  phone: "",
 });
 
 const handleRegister = async () => {
@@ -126,9 +126,15 @@ const handleRegister = async () => {
     !user.value.password ||
     !user.value.firstName ||
     !user.value.lastName ||
+    !user.value.phone ||
     !user.value.birthday
   ) {
-    alert("Vui lòng nhập đầy đủ thông tin!");
+    toast.open({
+      message: "Vui lòng nhập đầy đủ thông tin!",
+      type: "warning",
+      duration: 3000,
+      position: "top-right",
+    });
     return;
   }
 
@@ -139,19 +145,39 @@ const handleRegister = async () => {
       password: user.value.password,
       firstName: user.value.firstName,
       lastName: user.value.lastName,
+      gender: user.value.gender,
+      phone: user.value.phone,
       birthday: new Date(user.value.birthday).toISOString().split("T")[0],
     });
-    
+
     if (success) {
-      alert("Đăng ký và đăng nhập thành công");
-      router.push("/"); // Chuyển hướng về trang chủ
+      toast.open({
+        message: "Đăng ký và đăng nhập thành công",
+        type: "success",
+        duration: 3000,
+        position: "top-right",
+      });
+      router.push("/");
     } else {
-      alert("Đăng ký hoặc đăng nhập thất bại");
+      toast.open({
+        message: "Đăng ký hoặc đăng nhập thất bại",
+        type: "error",
+        duration: 3000,
+        position: "top-right",
+      });
     }
   } catch (error) {
-    alert("Đã có lỗi xảy ra");
     console.error("Lỗi khi đăng ký:", error);
   }
 };
 </script>
-<style></style>
+<style scoped>
+.form-container {
+  max-width: 400px;
+  margin: auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+</style>
