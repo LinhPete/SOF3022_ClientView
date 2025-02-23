@@ -22,6 +22,11 @@
         >
       </p>
       <p v-if="userStore.userInfo">
+        <router-link to="/order/list" class="dropdown-item"
+          >Thông tin đơn hàng</router-link
+        >
+      </p>
+      <p v-if="userStore.userInfo">
         <button @click="logout" class="dropdown-item">Đăng xuất</button>
       </p>
     </div>

@@ -5,18 +5,15 @@
         <h1>Thanh toán</h1>
         <h2>____</h2>
         <div class="form-container">
-          <form @submit.prevent="handlePayment">
+          <form>
             <div class="form-group">
-              <input type="text" placeholder="Họ" v-model="customer.firstName" />
+              <input type="text" placeholder="Họ và tên" v-model="customer.fullName" />
             </div>
             <div class="form-group">
-              <input type="text" placeholder="Tên" v-model="customer.lastName" />
+              <input type="text" placeholder="Email" v-model="customer.email" />
             </div>
             <div class="form-group">
               <input type="text" placeholder="Số điện thoại" v-model="customer.phone" />
-            </div>
-            <div class="form-group">
-              <input type="text" placeholder="Địa chỉ cụ thể (số nhà, đường...)" v-model="customer.address" />
             </div>
   
             <!-- Địa chỉ giao hàng trên cùng một hàng -->
@@ -75,7 +72,7 @@
               <input type="text" :value="currencyFormat(finalTotal)" readonly />
             </div>
   
-            <button class="submit-btn" @click="handleCheckout" :disabled="paymentStore.isLoading">
+            <button type="button" class="submit-btn" @click="handleCheckout" :disabled="paymentStore.isLoading">
               Thanh toán VNPay
             </button>
             <router-link to="/card"><strong style="font-size: 14px; margin: 20px">←Quay lại</strong></router-link>
@@ -93,7 +90,9 @@ import { useCartStore } from "../../stores/cartStore";
 import { usePaymentStore } from "../../stores/paymentStore";
 import { useOrders } from "../../stores/OrderStore";
 import { useUserStore } from "../../stores/userStore";
+import { useRouter } from "vue-router";
 
+const router = useRouter()
 const ghnStore = useGHNStore();
 const cartStore = useCartStore();
 const paymentStore = usePaymentStore();
@@ -101,12 +100,7 @@ const orderStore = useOrders();
 const userStore = useUserStore();
 
 // Thông tin khách hàng
-const customer = ref({
-  firstName: "",
-  lastName: "",
-  phone: "",
-  address: "",
-});
+const customer = ref({});
 
 // Danh sách tỉnh, quận, phường, phương thức vận chuyển
 const provinces = computed(() => ghnStore.provinces);
@@ -123,14 +117,15 @@ const selectedWardTo = ref("");
 const selectedShippingMethod = ref("");
 
 // Giá trị tổng tiền
-const totalPrice = ref(100000); // Giả sử tổng tiền hàng ban đầu
+const totalPrice = ref(100000);
 const shippingFee = ref(0);
 const finalTotal = computed(() => {
-  console.log("totalPrice.value:", totalPrice.value);
-  console.log("Kiểu dữ liệu của totalPrice.value:", typeof totalPrice.value);
-  console.log("shippingFee.value:", shippingFee.value)
   return Number(totalPrice.value) + Number(shippingFee.value)
 });
+
+const loadCustomer = () => {
+  customer.value = userStore.userInfo;
+}
 
 const loadTotalPrice = () => {
   const response = cartStore.totalPrice;
@@ -179,41 +174,69 @@ const calculateShippingFee = async () => {
     shippingFee.value = ghnStore.shippingFee;
 };
 
-// Gọi API để lấy danh sách tỉnh khi component được mount
-onMounted(() => {
-  loadTotalPrice();
-  ghnStore.fetchProvinces();
-});
-
-// Xử lý thanh toán
-const handlePayment = () => {
-  alert(`Đơn hàng của bạn đã được xử lý. Tổng tiền: ${currencyFormat(finalTotal.value)}`);
-};
-
 // Bộ lọc hiển thị giá tiền
 const currencyFormat = (value) => {
   return new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(value);
 };
 
-// Ví dụ dữ liệu thanh toán được gửi lên backend (bao gồm amount, bankCode, orderId, ...)
-const paymentData = {
-  amount: finalTotal.value,       // Số tiền thanh toán (sẽ được nhân 100 trong backend nếu cần)
-  bankCode: 'NCB',      // Mã ngân hàng (nếu có)
-  orderId: '12345'      // Mã đơn hàng
-};
-
-
-const orderData = {
-
-}
 
 
 const handleCheckout = async () => {
 
+  const orderData = {
+    // Lấy userId từ thông tin người dùng (giả sử userStore lưu id trong customer.value.id)
+    userId: customer.value.id,
 
+    // Tách họ và tên từ fullName (giả sử tên đầy đủ được nhập dạng "Tên Họ")
+    rFirstname: customer.value.fullName ? customer.value.fullName.split(' ')[0] : "",
+    rLastname: customer.value.fullName ? customer.value.fullName.split(' ').slice(1).join(' ') : "",
 
-  await paymentStore.createPayment(paymentData);
+    // Số điện thoại người nhận
+    rPhone: customer.value.phone,
+
+    // Địa chỉ giao hàng (to*)
+    toCity: parseInt(selectedProvinceTo.value, 10),
+    toState: parseInt(selectedDistrictTo.value, 10),
+    toWard: selectedWardTo.value,
+
+    // Phương thức thanh toán (theo UI chỉ có VNPay)
+    paymentMethod: "VNPay",
+
+    // Mã dịch vụ vận chuyển (service_id)
+    service_id: parseInt(selectedShippingMethod.value, 10),
+
+    // Phí vận chuyển
+    shippingFee: Number(shippingFee.value),
+
+    // Tổng tiền hàng (subtotal)
+    subtotal: Number(totalPrice.value),
+
+    // Tổng thanh toán (tiền hàng + phí vận chuyển)
+    total: Number(finalTotal.value)
+  };
+
+  const order = await orderStore.createOrder(orderData);
+
+  console.log(order.id)
+  if (order) {
+    const paymentData = {
+      amount: finalTotal.value,
+      bankCode: 'NCB',
+      orderId: order.id
+    };
+    console.log(paymentData)
+    const response = await paymentStore.createPayment(paymentData);
+    if (response) {
+      router.push("/order/list");
+    }
+  }
 };
+
+onMounted(() => {
+  loadCustomer();
+  loadTotalPrice();
+  ghnStore.fetchProvinces();
+});
 </script> 
 
 <style scoped>

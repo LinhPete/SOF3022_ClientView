@@ -6,17 +6,22 @@ export const usePaymentStore = defineStore("payment", {
     paymentResult: null,
     paymentError: null,
     errorMessage: null,
+    isLoading: false,
   }),
   actions: {
     async createPayment(paymentData) {
       try {
-        isLoading.value = true;
-        const response = await axiosInstance.get("/payment/vn-pay", {
-          params: paymentData,
+        this.isLoading = true;
+        const response = await axiosInstance.get("/store/payment/vn-pay", {
+          params: {
+            amount: paymentData.amount,
+            bankCode: paymentData.bankCode,
+            orderId: paymentData.orderId,
+          },
         });
         if (
           response.data &&
-          response.data.code === "ok" &&
+          response.data.code === 0 &&
           response.data.result
         ) {
           const paymentUrl =
@@ -27,10 +32,10 @@ export const usePaymentStore = defineStore("payment", {
             response.data.message || "Không thể tạo thanh toán VNPay";
         }
       } catch (error) {
-        errorMessage.value = "Lỗi khi tạo thanh toán VNPay";
+        this.errorMessage = "Lỗi khi tạo thanh toán VNPay";
         console.error(error);
       } finally {
-        isLoading.value = false;
+        this.isLoading = false;
       }
     },
     /**
@@ -41,23 +46,26 @@ export const usePaymentStore = defineStore("payment", {
      */
     async handlePaymentCallback(queryParams) {
       try {
-        isLoading.value = true;
+        this.isLoading = true;
         const { vnp_ResponseCode, vnp_TxnRef } = queryParams;
-        const response = await axiosInstance.get("/payment/vn-pay-callback", {
-          params: { vnp_ResponseCode, vnp_TxnRef },
-        });
+        const response = await axiosInstance.get(
+          "/store/payment/vn-pay-callback",
+          {
+            params: { vnp_ResponseCode, vnp_TxnRef },
+          }
+        );
         if (response.data && response.data.result) {
-          paymentResult.value = response.data.result;
+            this.paymentResult = response.data.result;
           alert("Thanh toán thành công! Đơn hàng của bạn đã được hoàn tất.");
         } else {
           alert("Thanh toán thất bại!");
         }
         router.push("/"); // Điều hướng về trang chủ
       } catch (error) {
-        errorMessage.value = "Lỗi khi xử lý callback thanh toán";
+        this.errorMessage = "Lỗi khi xử lý callback thanh toán";
         console.error(error);
       } finally {
-        isLoading.value = false;
+        this.isLoading = false;
       }
     },
   },

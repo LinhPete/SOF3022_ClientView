@@ -39,7 +39,6 @@ export const useCartStore = defineStore("cart", {
     },
     setTotalPrice(totalPrice) {
       this.totalPrice = totalPrice;
-      console.log(totalPrice)
     },
     async addProductToCart(product) {
       this.loading = true;

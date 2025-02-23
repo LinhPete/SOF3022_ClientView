@@ -31,6 +31,25 @@ export const useOrders = defineStore("orders", {
         this.loading = false;
       }
     },
+    async fetchAllOrdersByUserId(userId) {
+      this.loading = true;
+      this.error = null;
+      try {
+        const response = await axiosInstance.get(`/store/orders/all/${userId}`);
+
+        if (response.data) {
+          this.orders = response.data || [];
+          
+          return { success: true };
+        }
+        return { success: false, message: "Không có dữ liệu đơn hàng!" };
+      } catch (error) {
+        this.error = error.response?.data || "Lỗi lấy danh sách đơn hàng!";
+        return { success: false, message: this.error };
+      } finally {
+        this.loading = false;
+      }
+    },
 
     async createOrder(order) {
       this.loading = true;
@@ -38,13 +57,10 @@ export const useOrders = defineStore("orders", {
       try {
         const response = await axiosInstance.post(`/store/orders`, order);
         if (response.data) {
-          return {
-            success: true,
-            message: "Tạo đơn hàng thành công!",
-            data: response.data.result,
-          };
+          return response.data.result;
+        } else {
+          return { success: false, message: "Không thể tạo đơn hàng!" };
         }
-        return { success: false, message: "Không thể tạo đơn hàng!" };
       } catch (error) {
         this.error = error.response?.data?.message || "Lỗi tạo đơn hàng!";
         return { success: false, message: this.error };
