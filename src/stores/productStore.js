@@ -1,21 +1,12 @@
-// productStore.js
 import { defineStore } from "pinia";
 import axiosInstance from "../axios/asios";
 
 export const useProductStore = defineStore("products", {
   state: () => ({
-    // Lưu theo dạng object: key là số trang, value là mảng sản phẩm.
-    products: (() => {
-      try {
-        const data = JSON.parse(localStorage.getItem("products"));
-        return data && typeof data === "object" ? data : {};
-      } catch (e) {
-        return {};
-      }
-    })(),
-    product: null,
+    products: [],
     loading: false,
     error: null,
+    totalPages: null,
   }),
 
   actions: {
@@ -25,20 +16,26 @@ export const useProductStore = defineStore("products", {
       localStorage.removeItem("products");
     },
 
-    // Lấy danh sách sản phẩm theo trang
     async fetchProduct(page = 1) {
-      if (this.products[page]) return;
-
       this.loading = true;
       this.error = null;
 
       try {
         const response = await axiosInstance.get(
-          `/store/products?page=${page}`
+          `/store/products?page=${page}`,
+          {
+            params: {
+              page: page,
+            },
+          }
         );
-        const productsData = response.data.result || [];
-        // Lưu theo dạng object phân trang
-        this.products = { ...this.products, [page]: productsData };
+        if (response) {
+          this.products = response.data.content;
+          this.totalPages = response.data.totalPages;
+        } else {
+          return { message: "Không thấy sản phẩm", products: [] };
+        }
+
         localStorage.setItem("products", JSON.stringify(this.products));
       } catch (error) {
         this.error = "Không thể tải danh sách sản phẩm";
@@ -59,8 +56,7 @@ export const useProductStore = defineStore("products", {
         const response = await axiosInstance.get(
           `/store/products/${productId}`
         );
-        this.product = response.data.result;
-        return this.product;
+        return response.data.result;
       } catch (error) {
         console.error(`Lỗi khi lấy sản phẩm ID: ${productId}`, error);
         this.error = "Không thể lấy sản phẩm";

@@ -2,72 +2,51 @@
   <div class="boxspto">
     <p v-if="productStore.loading">Đang tải...</p>
     <p v-if="productStore.error" class="error">{{ productStore.error }}</p>
-
-    <div class="boxsp" v-if="!productStore.loading && productStore.product">
+  
+    <div class="boxsp" >
       <div class="product-container">
         <div class="image-section">
           <div class="thumbnail-container">
-            <img
-              v-for="(img, index) in productStore.product.otherImages"
-              :key="index"
-              :src="img"
-              :alt="`Hình ảnh ${index + 1}`"
-              @click="productStore.product.image = img"
-              class="thumbnail"
-            />
+            <img v-for="(img, index) in product.otherImages" :key="index" :src="img"
+              :alt="`Hình ảnh ${index + 1}`" @click="product.image = img" class="thumbnail" />
           </div>
           <div class="main-image-container">
-            <div class="sale" v-if="productStore.product.discount">
-              -{{ productStore.product.discount }}%
+            <div class="sale" v-if="product.discount">
+              -{{ product.discount }}%
             </div>
-            <img
-              :src="productStore.product.image"
-              :alt="productStore.product.name"
-              class="main-image"
-            />
+            <img :src="product.image" :alt="product.name" class="main-image" />
           </div>
         </div>
         <div class="info-section">
-          <h2 class="product-title">{{ productStore.product.name }}</h2>
-
+          <h2 class="product-title">{{ product.name }}</h2>
+  
           <div class="price">
-            <span class="sale-price"
-              >{{ productStore.product.salePrice }}₫</span
-            >
-            <del class="original-price"
-              >{{ productStore.product.originalPrice }}₫</del
-            >
+            <span class="sale-price">{{ product.salePrice }}₫</span>
+            <del class="original-price">{{ product.originalPrice }}₫</del>
           </div>
-
+  
           <div class="danhgia">
-            <i
-              v-for="star in 5"
-              :key="star"
-              class="fa-solid fa-star fa-2xs"
-              :style="{
-                color: star <= productStore.product.rating ? '#ff4d4f' : '#ccc',
-              }"
-            ></i>
-            <span class="review-count"
-              >({{ productStore.product.reviews }} lượt đánh giá)</span
-            >
+            <i v-for="star in 5" :key="star" class="fa-solid fa-star fa-2xs" :style="{
+                  color: star <= product.rating ? '#ff4d4f' : '#ccc',
+                }"></i>
+            <span class="review-count">({{ product.reviews }} lượt đánh giá)</span>
           </div>
-
+  
           <div class="product-details">
             <div>
-              <label>Thương hiệu:</label> {{ productStore.product.author }}
+              <label>Thương hiệu:</label> {{ product.author }}
             </div>
             <div>
-              <label>Danh mục:</label> {{ productStore.product.categoryName }}
+              <label>Danh mục:</label> {{ product.categoryName }}
             </div>
-            <div><label>Giá:</label> {{ productStore.product.price }} USD</div>
+            <div><label>Giá:</label> {{ product.price }} USD</div>
             <div>
-              <label>Ngày mở bán:</label> {{ productStore.product.publishDate }}
+              <label>Ngày mở bán:</label> {{ product.publishDate }}
             </div>
           </div>
-
+  
           <p class="description">
-            <label>Mô tả:</label> {{ productStore.product.description }}
+            <label>Mô tả:</label> {{ product.description }}
           </p>
         </div>
       </div>
@@ -76,17 +55,19 @@
 </template>
 
 <script setup>
-import { onMounted } from "vue";
+import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { useProductStore } from "../../stores/productStore";
 
 const route = useRoute();
 const productStore = useProductStore();
+const product = ref({});
 
 onMounted(async () => {
   const productId = parseInt(route.params.id);
-  if (!productStore.product || productStore.product.id !== productId) {
-    await productStore.fetchProductbyId(productId);
+  const response = await productStore.fetchProductbyId(productId);
+  if(response){
+    product.value = response;
   }
 });
 </script>
