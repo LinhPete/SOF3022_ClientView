@@ -1,9 +1,5 @@
 <template>
     <div class="container-default">
-      <article>
-        <h1>Phục hồi mật khẩu</h1>
-        <h2>____</h2>
-      </article>
       <aside>
         <div class="form-container">
           <form>
@@ -18,19 +14,6 @@
                 />
               </div>
             </div>
-
-            <!-- Phần ghi chú -->
-            <p class="note">
-              This site is protected by reCAPTCHA and the Google
-              <a href="https://policies.google.com/privacy" target="_blank"
-                >Privacy Policy</a
-              >
-              and
-              <a href="https://policies.google.com/terms" target="_blank"
-                >Terms of Service</a
-              >
-              apply.
-            </p>
 
             <!-- Nút Đăng ký -->
             <button type="submit" class="submit-btn">Gửi</button>

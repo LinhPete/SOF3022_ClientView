@@ -1,10 +1,6 @@
 <template>
   <div>
     <div class="container-default-DK">
-      <article>
-        <h1>Tạo tài khoản</h1>
-        <h2>____</h2>
-      </article>
       <aside>
         <div class="form-container">
           <form @submit.prevent="handleRegister">
@@ -100,7 +96,6 @@
                 >Quay lại trang chủ</a
               >
             </router-link>
-            >
           </form>
         </div>
       </aside>

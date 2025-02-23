@@ -1,6 +1,5 @@
 <template>
   <div>
-    <Header />
     <aside v-if="cartItems.length > 0">
       <div class="giohang">
         <div class="sanphamgiohang">
@@ -29,38 +28,36 @@
                   }}</label>
                 </div>
                 <div class="quantity-control">
-                  <button
+                  <i
+                    class="fa-solid fa-minus quantity-btn"
                     @click="updateQuantity(item.productId, -1)"
-                    class="quantity-btn"
-                  >
-                    -
-                  </button>
+                    style="cursor: pointer"
+                  ></i>
                   <input
                     type="text"
                     class="quantity-input"
                     v-model="item.quantity"
                     readonly
                   />
-                  <button
+                  <i
+                    class="fa-solid fa-plus quantity-btn"
                     @click="updateQuantity(item.productId, 1)"
-                    class="quantity-btn"
-                  >
-                    +
-                  </button>
+                    style="cursor: pointer"
+                  ></i>
                 </div>
               </div>
               <div class="xoagiohang">
                 <i
                   class="fa-solid fa-delete-left"
-                  @click="cartStore.removeFromCart(index, item.id)"
+                  @click="removeItem(index)"
                 ></i>
-                <label
-                  ><b>{{
+                <label>
+                  <b>{{
                     formatCurrency(
                       item.quantity * getProdInfo(item.productId).price
                     )
-                  }}</b></label
-                >
+                  }}</b>
+                </label>
               </div>
             </div>
             <hr />
@@ -96,35 +93,36 @@
 import { computed, onMounted } from "vue";
 import { useCartStore } from "../../stores/cartStore";
 import { useProductStore } from "../../stores/productStore";
-import Header from "../menu-link/Header.vue";
-import Footer from "../menu-link/Footer.vue";
+import { useRouter } from "vue-router";
 
 const productStore = useProductStore();
 const cartStore = useCartStore();
+const router = useRouter();
+
 const cartItems = computed(() => cartStore.cart);
 
-onMounted(async () => {
-  await cartStore.fetchCart();
-  await Promise.all(
-    cartStore.cart.map(async (item) => {
-      if (!productMap.value[item.productId]) {
-        const prod = await productStore.fetchProductbyId(item.productId);
-      }
-    })
-  );
+// Flatten tất cả sản phẩm từ productStore.products (object phân trang) thành 1 mảng
+const allProducts = computed(() => {
+  const prods = productStore.products;
+  return Object.values(prods).flat();
 });
-const productMap = computed(() =>
-  productStore.products.reduce((map, product) => {
+
+const productMap = computed(() => {
+  return allProducts.value.reduce((map, product) => {
     map[product.id] = product;
     return map;
-  }, {})
-);
+  }, {});
+});
 
 const getProdInfo = (productId) =>
   productMap.value[productId] || { name: "Đang tải...", price: 0, image: "" };
 
 const updateQuantity = async (productId, delta) => {
   await cartStore.updateQuantity(productId, delta);
+};
+
+const removeItem = (index) => {
+  cartStore.removeFromCart(index);
 };
 
 const totalPrice = computed(() =>
@@ -141,6 +139,19 @@ const formatCurrency = (value) =>
 
 const checkout = async () => {
   await cartStore.updateCart();
-  router.push("payment");
+  // Sau checkout, chuyển hướng trang nếu cần
+  router.push("/payment");
 };
+
+onMounted(async () => {
+  await cartStore.fetchCart();
+  // Đảm bảo cho từng item trong cart có thông tin sản phẩm, nếu chưa có, gọi fetchProductbyId
+  await Promise.all(
+    cartStore.cart.map(async (item) => {
+      if (!productMap.value[item.productId]) {
+        await productStore.fetchProductbyId(item.productId);
+      }
+    })
+  );
+});
 </script>

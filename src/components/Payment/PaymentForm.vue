@@ -1,5 +1,4 @@
 <template>
-  <Header></Header>
   <div class="container-default-DK">
     <article>
       <aside>
@@ -19,9 +18,6 @@
             <div class="form-group">
               <input type="text" placeholder="Địa chỉ" />
             </div>
-            <!-- <div class="form-group">
-              <input type="text" placeholder="Địa chỉ 2" />
-            </div> -->
             <div class="form-group">
               <label for="">Tổng tiền hàng </label>
               <input type="text" readonly />
@@ -30,10 +26,6 @@
               <label for="">Tổng tiền (Vận chuyển,thuế ....) </label>
               <input type="text" readonly />
             </div>
-
-            <!-- Các phần input khác -->
-
-            <!-- Phần ghi chú -->
             <p class="note">
               This site is protected by reCAPTCHA and the Google
               <a href="https://policies.google.com/privacy" target="_blank"
@@ -45,11 +37,7 @@
               >
               apply.
             </p>
-
-            <!-- Nút Đăng ký -->
             <button type="submit" class="submit-btn">Thanh toán</button>
-
-            <!-- Link quay lại -->
             <router-link to="/card"
               ><strong style="font-size: 14px; margin: 20px"
                 >←Quay lại</strong
@@ -60,12 +48,8 @@
       </aside>
     </article>
   </div>
-  <Footer></Footer>
 </template>
-<script setup>
-import Header from "../menu-link/Header.vue";
-import Footer from "../menu-link/Footer.vue";
-</script>
+<script setup></script>
 <style scoped>
 body {
   margin-top: 50px;

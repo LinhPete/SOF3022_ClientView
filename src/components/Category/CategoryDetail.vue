@@ -7,12 +7,9 @@
         <span>Danh mục</span>
         <span>/</span>
         <span>{{ categoryName }}</span>
-        <!-- Sử dụng tên danh mục động -->
       </div>
     </div>
-
     <div class="container-default-NA">
-      <!-- Tiêu đề danh mục được hiển thị động -->
       <h1>{{ categoryName }}</h1>
 
       <div class="filter-container">
@@ -65,7 +62,7 @@
             :key="product.id"
           >
             <div class="sale">{{ product.discount }}%</div>
-            <router-link :to="`/product-detail/${product.id}`">
+            <router-link :to="`/product/${product.id}`">
               <img :src="product.image" :alt="product.name" />
             </router-link>
             <div class="tensp">
@@ -105,16 +102,13 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import { useRoute } from "vue-router";
-import Header from "../menu-link/Header.vue";
-import Footer from "../menu-link/Footer.vue";
 import { useCategoryStore } from "../../stores/categoryStrore";
 import { useProductStore } from "../../stores/productStore";
 
-// Sử dụng route để lấy id từ URL
 const route = useRoute();
-const categoryId = ref(route.params.id || ""); // Lấy ID từ route
+const categoryId = ref(route.params.id || "");
 
 const categoryStore = useCategoryStore();
 const productStore = useProductStore();
@@ -129,20 +123,18 @@ async function loadCategory(id) {
   categoryName.value = cat ? cat.name : "Danh mục";
 }
 
-// Dùng computed() để lọc sản phẩm theo categoryId
 const productsByCategory = computed(() => {
-  let products = productStore.products;
-
-  if (!products.length) {
-    // Nếu store chưa có sản phẩm, lấy từ localStorage
-    const storedProducts = localStorage.getItem("products");
-    if (storedProducts) {
-      products = JSON.parse(storedProducts);
-    }
+  let allProducts = [];
+  const prods = productStore.products;
+  if (prods && typeof prods === "object" && !Array.isArray(prods)) {
+    allProducts = Object.values(prods).flat();
+  } else if (Array.isArray(prods)) {
+    allProducts = prods;
   }
 
-  // Lọc sản phẩm theo categoryId
-  return products.filter((product) => product.categoryId == categoryId.value);
+  return allProducts.filter(
+    (product) => product.categoryId == categoryId.value
+  );
 });
 watch(
   () => route.params.id,
@@ -155,13 +147,11 @@ watch(
   { immediate: true }
 );
 </script>
-<style>
-/* Giữ nguyên style của bạn */
+<style scoped>
 .error {
   color: red;
 }
 .product-item {
-  /* Ví dụ style cho sản phẩm, bạn có thể điều chỉnh lại */
   margin-bottom: 1rem;
 }
 </style>

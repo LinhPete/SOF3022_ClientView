@@ -37,6 +37,36 @@ export const useUserStore = defineStore("user", {
         return false;
       }
     },
+    
+    async googleSignIn(googleToken) {
+      const Toast = useToast();
+      try {
+        const response = await axiosInstance.post("/store/auth/google", {
+          token: googleToken,
+        });
+        const { token, user } = response.data;
+
+        this.token = token;
+        this.userInfo = user;
+        localStorage.setItem("token", token);
+        localStorage.setItem("userInfo", JSON.stringify(user));
+
+        Toast.open({
+          message: "Đăng nhập thành công!",
+          type: "success",
+          duration: 3000,
+          position: "top-right",
+        });
+      } catch (error) {
+        Toast.open({
+          message: "Đăng nhập thất bại!",
+          type: "error",
+          duration: 3000,
+          position: "top-right",
+        });
+        console.error("Google SSO Error:", error);
+      }
+    },
 
     // Đăng ký và tự động đăng nhập
     async registerAndLogin(userInfo) {
