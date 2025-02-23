@@ -14,18 +14,22 @@
             <div class="khunggiohang">
               <div class="hinh">
                 <img
-                  :src="getProdInfo(item.productId).image"
-                  :alt="getProdInfo(item.productId).name"
+                  :src="getProdInfoFromLocalStorage(item.productId).image"
+                  :alt="getProdInfoFromLocalStorage(item.productId).name"
                 />
               </div>
               <div class="tenvagia">
-                <label
-                  ><b>{{ getProdInfo(item.productId).name }}</b></label
-                >
+                <label>
+                  <b>{{ getProdInfoFromLocalStorage(item.productId).name }}</b>
+                </label>
                 <div class="duongdan" style="padding-top: 7px">
-                  <label>{{
-                    formatCurrency(getProdInfo(item.productId).price)
-                  }}</label>
+                  <label>
+                    {{
+                      formatCurrency(
+                        getProdInfoFromLocalStorage(item.productId).price
+                      )
+                    }}
+                  </label>
                 </div>
                 <div class="quantity-control">
                   <i
@@ -52,11 +56,14 @@
                   @click="removeItem(index)"
                 ></i>
                 <label>
-                  <b>{{
-                    formatCurrency(
-                      item.quantity * getProdInfo(item.productId).price
-                    )
-                  }}</b>
+                  <b>
+                    {{
+                      formatCurrency(
+                        item.quantity *
+                          getProdInfoFromLocalStorage(item.productId).price
+                      )
+                    }}
+                  </b>
                 </label>
               </div>
             </div>
@@ -92,30 +99,34 @@
 <script setup>
 import { computed, onMounted } from "vue";
 import { useCartStore } from "../../stores/cartStore";
-import { useProductStore } from "../../stores/productStore";
 import { useRouter } from "vue-router";
 
-const productStore = useProductStore();
 const cartStore = useCartStore();
 const router = useRouter();
 
 const cartItems = computed(() => cartStore.cart);
 
-// Flatten tất cả sản phẩm từ productStore.products (object phân trang) thành 1 mảng
-const allProducts = computed(() => {
-  const prods = productStore.products;
-  return Object.values(prods).flat();
-});
-
-const productMap = computed(() => {
-  return allProducts.value.reduce((map, product) => {
-    map[product.id] = product;
-    return map;
-  }, {});
-});
-
-const getProdInfo = (productId) =>
-  productMap.value[productId] || { name: "Đang tải...", price: 0, image: "" };
+const getProdInfoFromLocalStorage = (productId) => {
+  let products = [];
+  const storedProducts = localStorage.getItem("products");
+  if (storedProducts) {
+    try {
+      const parsedData = JSON.parse(storedProducts);
+      products = Array.isArray(parsedData)
+        ? parsedData
+        : Object.values(parsedData).flat();
+    } catch (e) {
+      console.error("Lỗi parse products từ localStorage:", e);
+    }
+  }
+  return (
+    products.find((product) => product.id === productId) || {
+      name: "Đang tải...",
+      price: 0,
+      image: "",
+    }
+  );
+};
 
 const updateQuantity = async (productId, delta) => {
   await cartStore.updateQuantity(productId, delta);
@@ -127,7 +138,8 @@ const removeItem = (index) => {
 
 const totalPrice = computed(() =>
   cartItems.value.reduce(
-    (sum, item) => sum + item.quantity * getProdInfo(item.productId).price,
+    (sum, item) =>
+      sum + item.quantity * getProdInfoFromLocalStorage(item.productId).price,
     0
   )
 );
@@ -139,19 +151,10 @@ const formatCurrency = (value) =>
 
 const checkout = async () => {
   await cartStore.updateCart();
-  // Sau checkout, chuyển hướng trang nếu cần
   router.push("/payment");
 };
 
 onMounted(async () => {
   await cartStore.fetchCart();
-  // Đảm bảo cho từng item trong cart có thông tin sản phẩm, nếu chưa có, gọi fetchProductbyId
-  await Promise.all(
-    cartStore.cart.map(async (item) => {
-      if (!productMap.value[item.productId]) {
-        await productStore.fetchProductbyId(item.productId);
-      }
-    })
-  );
 });
 </script>

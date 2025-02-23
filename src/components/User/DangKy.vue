@@ -23,23 +23,22 @@
               />
             </div>
             <div class="form-group">
-              <label
-                ><input
+              <label>
+                <input
                   type="radio"
                   name="gender"
-                  value="nu"
+                  :value="false"
                   v-model="user.gender"
                 />
                 Nữ
                 <input
                   type="radio"
                   name="gender"
-                  value="nam"
+                  :value="true"
                   v-model="user.gender"
                 />
-                Nam</label
-              >
-              <label></label>
+                Nam
+              </label>
             </div>
             <div class="form-group">
               <input
@@ -104,8 +103,6 @@
 </template>
 
 <script setup>
-import Footer from "../menu-link/Footer.vue";
-import Header from "../menu-link/Header.vue";
 import { useUserStore } from "../../stores/userStore";
 import { ref } from "vue";
 import { useRouter } from "vue-router"; // Thêm import này
@@ -115,10 +112,10 @@ const userStore = useUserStore();
 const toast = useToast();
 const user = ref({
   email: "",
-  password: "",
-  confirmPassword: "", // Thêm trường xác nhận mật khẩu
+  password: "", // Thêm trường xác nhận mật khẩu
   firstName: "",
   lastName: "",
+  gender: false,
   birthday: "",
   phone: "",
 });
@@ -129,8 +126,8 @@ const handleRegister = async () => {
     !user.value.password ||
     !user.value.firstName ||
     !user.value.lastName ||
-    !user.value.birthday ||
-    !user.value.phone
+    !user.value.phone ||
+    !user.value.birthday
   ) {
     toast.open({
       message: "Vui lòng nhập đầy đủ thông tin!",
@@ -138,7 +135,6 @@ const handleRegister = async () => {
       duration: 3000,
       position: "top-right",
     });
-    return;
     return;
   }
 
@@ -149,6 +145,7 @@ const handleRegister = async () => {
       password: user.value.password,
       firstName: user.value.firstName,
       lastName: user.value.lastName,
+      gender: user.value.gender,
       phone: user.value.phone,
       birthday: new Date(user.value.birthday).toISOString().split("T")[0],
     });
@@ -174,4 +171,13 @@ const handleRegister = async () => {
   }
 };
 </script>
-<style></style>
+<style scoped>
+.form-container {
+  max-width: 400px;
+  margin: auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+</style>

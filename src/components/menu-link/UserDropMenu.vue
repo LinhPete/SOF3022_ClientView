@@ -29,14 +29,14 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { useUserStore } from "../../stores/userStore";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
 const userStore = useUserStore();
 const isOpen = ref(false);
-
+import { watch } from "vue";
 // Toggle dropdown menu
 const toggleDropdown = () => {
   isOpen.value = !isOpen.value;
@@ -51,11 +51,17 @@ const logout = () => {
 };
 
 // Lấy thông tin người dùng khi component được mount
-// onMounted(() => {
-//   if (!userStore.userInfo) {
-//     userStore.fetchUserInfo();
-//   }
-// }
+onMounted(() => {
+  if (!userStore.userInfo) {
+    userStore.fetchUserInfo();
+  }
+});
+watch(
+  () => router.currentRoute.value.path,
+  () => {
+    isOpen.value = false;
+  }
+);
 </script>
 
 <style scoped>

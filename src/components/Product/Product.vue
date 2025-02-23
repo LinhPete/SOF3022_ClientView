@@ -1,43 +1,54 @@
 <template>
   <article>
-    <p>Sản phẩm đang giảm giá</p>
+    <p>Danh sách sản phẩm</p>
     <div class="boxspto">
       <p v-if="productStore.loading">Đang tải...</p>
       <p v-if="productStore.error" class="error">{{ productStore.error }}</p>
-  
-      <div class="boxsp" id="spmoinhat" v-if="!productStore.loading && !productStore.error">
+
+      <div
+        class="boxsp"
+        id="spmoinhat"
+        v-if="!productStore.loading && !productStore.error"
+      >
         <div class="sp" v-for="product in displayedProducts" :key="product.id">
           <!-- Sale Label -->
-          <div class="sale" v-if="product.discount">-{{ product.discount }}%</div>
-  
+          <div class="sale" v-if="product.discount">
+            -{{ product.discount }}%
+          </div>
+
           <!-- Ảnh sản phẩm -->
           <router-link :to="`/product/${product.id}`" class="product-image">
             <img :src="product.image" :alt="product.name" />
           </router-link>
-  
+
           <!-- Thông tin sản phẩm -->
           <div class="tensp">
             <router-link :to="`/product/${product.id}`">
               <label>{{ product.name }}</label>
             </router-link>
           </div>
-  
+
           <div class="price">
-            <span class="sale-price">{{ product.salePrice }}₫</span>
-            <del class="original-price">{{ product.originalPrice }}₫</del>
+            <!-- <span class="sale-price">{{ product.price }}₫</span> -->
+            <span class="original-price">{{ product.price }}₫</span>
           </div>
-  
+
           <div class="danhgia">
-            <i v-for="star in 5" :key="star" class="fa-solid fa-star fa-2xs"
-              :style="{ color: star <= product.rating ? '#ff4d4f' : '#ccc' }"></i>
-            <label class="review-count">({{ product.reviews }} lượt đánh giá)</label>
+            <i
+              v-for="star in 5"
+              :key="star"
+              class="fa-solid fa-star fa-2xs"
+              :style="{ color: star <= product.rating ? '#ff4d4f' : '#ccc' }"
+            ></i>
+            <label class="review-count"
+              >({{ product.reviews }} lượt đánh giá)</label
+            >
           </div>
-  
+
           <!-- Giỏ hàng (hover mới hiển thị) -->
           <div class="cart-hover" @click="cartStore.addProductToCart(product)">
             <i class="fa-solid fa-bag-shopping fa-lg"></i>
           </div>
-  
         </div>
       </div>
     </div>
@@ -65,7 +76,6 @@ onMounted(async () => {
     totalPages.value = productStore.totalPages;
   }
 });
-
 </script>
 
 <style scoped>

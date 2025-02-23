@@ -37,7 +37,7 @@ export const useUserStore = defineStore("user", {
         return false;
       }
     },
-    
+
     async googleSignIn(googleToken) {
       const Toast = useToast();
       try {
@@ -114,7 +114,7 @@ export const useUserStore = defineStore("user", {
           Toast.open({
             message: "Bạn đã đăng xuất",
             type: "success",
-            duration: 3000,
+            duration: 1500,
             position: "top-right",
           });
           localStorage.removeItem("userInfo");
@@ -129,6 +129,29 @@ export const useUserStore = defineStore("user", {
         }
       } catch (error) {
         console.error("Lỗi khi đăng xuất:", error);
+      }
+    },
+    async updateUser(updateData) {
+      try {
+        if (!this.token) {
+          return;
+        }
+        const response = await axiosInstance.put(
+          `/store/users/${this.userId}`,
+          {
+            updateData,
+          }
+        );
+
+        if (response.data && response.data.result) {
+          this.userInfo = response.data.result;
+          localStorage.setItem("userInfo", JSON.stringify(this.userInfo));
+          return true;
+        }
+        return false;
+      } catch (error) {
+        console.error("Lỗi khi lấy thông tin người dùng:", error);
+        this.userInfo = null;
       }
     },
   },
