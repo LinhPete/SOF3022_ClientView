@@ -30,9 +30,9 @@ const router = createRouter({
       component: () => import("../components/Cart/Cart.vue"),
     },
     {
-      path: "/payment",
-      name: "payment",
-      component: () => import("../components/Payment/PaymentForm.vue"),
+      path: "/order",
+      name: "order",
+      component: () => import("../components/Order/OrderForm.vue"),
     },
     {
       path: "/Accessories",

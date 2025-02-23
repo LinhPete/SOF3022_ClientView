@@ -5,7 +5,7 @@
 // import TrangChu from "./components/TrangChu.vue";
 // import QuenMatKhau from "./components/QuenMatKhau.vue";
 import { RouterView } from "vue-router";
-import Header from "./components/menu-link/header.vue";
+import Header from "./components/menu-link/Header.vue";
 import Footer from "./components/menu-link/Footer.vue";
 </script>
 <template>

@@ -22,6 +22,7 @@ export const useCartStore = defineStore("cart", {
     })(),
     loading: false,
     error: null,
+    totalPrice: null,
   }),
   getters: {
     totalCartItems(state) {
@@ -35,6 +36,10 @@ export const useCartStore = defineStore("cart", {
     resetCart() {
       this.cart = [];
       localStorage.removeItem("cartInfo");
+    },
+    setTotalPrice(totalPrice) {
+      this.totalPrice = totalPrice;
+      console.log(totalPrice)
     },
     async addProductToCart(product) {
       this.loading = true;

@@ -13,50 +13,31 @@
           <div v-for="(item, index) in cartItems" :key="item.productId">
             <div class="khunggiohang">
               <div class="hinh">
-                <img
-                  :src="getProdInfo(item.productId).image"
-                  :alt="getProdInfo(item.productId).name"
-                />
+                <img :src="getProdInfo(item.productId).image" :alt="getProdInfo(item.productId).name" />
               </div>
               <div class="tenvagia">
-                <label
-                  ><b>{{ getProdInfo(item.productId).name }}</b></label
-                >
+                <label><b>{{ getProdInfo(item.productId).name }}</b></label>
                 <div class="duongdan" style="padding-top: 7px">
                   <label>{{
                     formatCurrency(getProdInfo(item.productId).price)
-                  }}</label>
+                    }}</label>
                 </div>
                 <div class="quantity-control">
-                  <i
-                    class="fa-solid fa-minus quantity-btn"
-                    @click="updateQuantity(item.productId, -1)"
-                    style="cursor: pointer"
-                  ></i>
-                  <input
-                    type="text"
-                    class="quantity-input"
-                    v-model="item.quantity"
-                    readonly
-                  />
-                  <i
-                    class="fa-solid fa-plus quantity-btn"
-                    @click="updateQuantity(item.productId, 1)"
-                    style="cursor: pointer"
-                  ></i>
+                  <i class="fa-solid fa-minus quantity-btn" @click="updateQuantity(item.productId, -1)"
+                    style="cursor: pointer"></i>
+                  <input type="text" class="quantity-input" v-model="item.quantity" readonly />
+                  <i class="fa-solid fa-plus quantity-btn" @click="updateQuantity(item.productId, 1)"
+                    style="cursor: pointer"></i>
                 </div>
               </div>
               <div class="xoagiohang">
-                <i
-                  class="fa-solid fa-delete-left"
-                  @click="removeItem(index)"
-                ></i>
+                <i class="fa-solid fa-delete-left" @click="removeItem(index)"></i>
                 <label>
                   <b>{{
                     formatCurrency(
-                      item.quantity * getProdInfo(item.productId).price
+                    item.quantity * getProdInfo(item.productId).price
                     )
-                  }}</b>
+                    }}</b>
                 </label>
               </div>
             </div>
@@ -75,8 +56,8 @@
                 </div>
               </div>
               <hr />
-              <router-link to="/payment">
-                <button @click="checkout">THANH TOÁN</button>
+              <router-link to="/order">
+                <button @click="checkout">ĐẶT HÀNG</button>
               </router-link>
             </div>
           </div>
@@ -125,11 +106,10 @@ const removeItem = (index) => {
   cartStore.removeFromCart(index);
 };
 
-const totalPrice = computed(() =>
-  cartItems.value.reduce(
-    (sum, item) => sum + item.quantity * getProdInfo(item.productId).price,
-    0
-  )
+const totalPrice = computed(() => cartItems.value.reduce(
+  (sum, item) => sum + item.quantity * getProdInfo(item.productId).price,
+  0
+)
 );
 
 const formatCurrency = (value) =>
@@ -138,9 +118,10 @@ const formatCurrency = (value) =>
   );
 
 const checkout = async () => {
+  cartStore.setTotalPrice(totalPrice.value);
   await cartStore.updateCart();
   // Sau checkout, chuyển hướng trang nếu cần
-  router.push("/payment");
+  router.push("/order");
 };
 
 onMounted(async () => {
