@@ -5,6 +5,7 @@
     <p v-if="reviewStore.loading" class="loading">Đang tải đánh giá...</p>
     <p v-if="reviewStore.error" class="error">{{ reviewStore.error }}</p>
 
+
     <div v-if="reviews.length > 0" class="review-list">
       <div class="scrollable-reviews">
         <div v-for="review in reviews" :key="review.id" class="review-item">
@@ -53,14 +54,31 @@ const formData = ref({
 });
 
 onMounted(async () => {
-  await authStore.fetchUserInfo();
-  formData.value.userId = authStore.user?.id || null;
-  await reviewStore.fetchReviews(productId);
-  reviews.value = reviewStore.reviews;
+  try {
+    await authStore.fetchUserInfo();
+
+    // Kiểm tra nếu userInfo tồn tại trước khi gán giá trị
+    formData.value.userId = authStore.userInfo?.id || null;
+
+    // Kiểm tra nếu API bị lỗi thì xử lý thay vì crash
+    await reviewStore.fetchReviews(productId);
+    reviews.value = reviewStore.reviews || []; // Đảm bảo reviews luôn là mảng
+  } catch (error) {
+    console.error("Lỗi khi tải đánh giá:", error);
+    reviewStore.error = "Không thể tải đánh giá. Vui lòng thử lại!";
+  }
 });
 
+
 const submitReview = async () => {
-  formData.value.userId = authStore.user?.id || null;
+  // Kiểm tra nếu người dùng chưa đăng nhập
+  if (!authStore.userInfo.id) {
+    alert("Vui lòng đăng nhập để bình luận!");
+    return;
+  }
+
+  formData.value.userId = authStore.userInfo?.id || null;
+
 
   if (!formData.value.rating || !formData.value.comment.trim() || !formData.value.headline.trim()) {
     alert("Vui lòng nhập đầy đủ thông tin đánh giá!");
@@ -81,6 +99,7 @@ const submitReview = async () => {
     alert(result.message);
   }
 };
+
 </script>
 
 <style scoped>
