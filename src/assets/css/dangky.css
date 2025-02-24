@@ -185,13 +185,8 @@ h1 {
 }
 
 .form-container {
-<<<<<<< HEAD
-    width: 600px;
-    margin: 0 auto;
-=======
   width: 380px;
   margin: 0 auto;
->>>>>>> 8c527812fc393a8bcc73e4d23a9d5aeeba6262e9
 }
 .form-group {
   margin-bottom: 15px;

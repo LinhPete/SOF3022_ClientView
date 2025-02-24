@@ -6,14 +6,8 @@
       <div class="product-container">
         <div class="image-section">
           <div class="thumbnail-container">
-            <img
-              v-for="(img, index) in product.otherImages"
-              :key="index"
-              :src="img"
-              :alt="`Hình ảnh ${index + 1}`"
-              @click="product.image = img"
-              class="thumbnail"
-            />
+            <img v-for="(img, index) in product.otherImages" :key="index" :src="img" :alt="`Hình ảnh ${index + 1}`"
+              @click="product.image = img" class="thumbnail" />
           </div>
           <div class="main-image-container">
             <div class="sale" v-if="product.discount">
@@ -24,7 +18,7 @@
         </div>
         <div class="col-6">
           <h2 class="product-title">{{ product.name }}</h2>
-
+  
           <div class="price">
             <span class="sale-price">{{ product.price }}₫</span>
           </div>
@@ -32,19 +26,12 @@
             <span class="sale-price">Size:{{ product.size }}</span>
           </div>
           <div class="danhgia">
-            <i
-              v-for="star in 5"
-              :key="star"
-              class="fa-solid fa-star fa-2xs"
-              :style="{
-                color: star <= product.rating ? '#ff4d4f' : '#ccc',
-              }"
-            ></i>
-            <span class="review-count"
-              >({{ product.reviews }}lượt đánh giá)</span
-            >
+            <i v-for="star in 5" :key="star" class="fa-solid fa-star fa-2xs" :style="{
+                        color: star <= product.rating ? '#ff4d4f' : '#ccc',
+                      }"></i>
+            <span class="review-count">({{ product.reviews }}lượt đánh giá)</span>
           </div>
-
+  
           <div class="product-details">
             <div><label>Thương hiệu:</label> {{ product.author }}</div>
             <div><label>Danh mục:</label> {{ product.categoryName }}</div>
@@ -56,17 +43,11 @@
           </p>
         </div>
         <div class="cart-icon" @click="cartStore.addProductToCart(product)">
-          <i
-            class="fa-solid fa-bag-shopping fa-lg"
-            style="font-size: 100px; padding-left: -20px"
-          ></i>
+          <i class="fa-solid fa-bag-shopping fa-lg" style="font-size: 100px; padding-left: -20px"></i>
         </div>
-        <ProductReview />
-
       </div>
-
-
     </div>
+    <ProductReview />
   </div>
 </template>
 
@@ -97,13 +78,18 @@ onMounted(async () => {
 
 <style scoped>
 .cart-icon {
+  position: absolute;
+  top: 50%;
+  left: 0;
   cursor: pointer;
 }
+
 .cart-icon :hover {
   transform: translateY(-5px);
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
   color: green;
 }
+
 .product-info {
   flex: 1;
   display: flex;
@@ -128,14 +114,15 @@ onMounted(async () => {
 
 .boxspto {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  position: relative;
   padding: 20px;
+  height: 1000px;
 }
 
 .boxsp {
-  width: 70%;
+  width: 100%;
   padding: 20px;
+  height: 100%;
   border: 1px solid #ddd;
   background-color: #fff;
 }

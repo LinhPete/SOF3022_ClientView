@@ -11,6 +11,10 @@ export const useUserStore = defineStore("user", {
   }),
 
   actions: {
+    setToken(token) {
+      this.token = token;
+      localStorage.setItem("token", token);
+    },
     // Xử lý đăng nhập
     async handleLogin(email, password) {
       const Toast = useToast();
@@ -38,32 +42,14 @@ export const useUserStore = defineStore("user", {
       }
     },
 
-    async googleSignIn(googleToken) {
+    async googleSignIn() {
       const Toast = useToast();
       try {
-        const response = await axiosInstance.post("/store/auth/google", {
-          token: googleToken,
-        });
-        const { token, user } = response.data;
-
-        this.token = token;
-        this.userInfo = user;
-        localStorage.setItem("token", token);
-        localStorage.setItem("userInfo", JSON.stringify(user));
-
-        Toast.open({
-          message: "Đăng nhập thành công!",
-          type: "success",
-          duration: 3000,
-          position: "top-right",
-        });
+        // Chuyển hướng người dùng để đăng nhập với Google
+        window.location.href =
+          "http://localhost:8080/store/login/oauth2/authorization/google";
       } catch (error) {
-        Toast.open({
-          message: "Đăng nhập thất bại!",
-          type: "error",
-          duration: 3000,
-          position: "top-right",
-        });
+        Toast.error("Đăng nhập thất bại!");
         console.error("Google SSO Error:", error);
       }
     },
@@ -99,49 +85,42 @@ export const useUserStore = defineStore("user", {
           this.userInfo = response.data.result;
           localStorage.setItem("userInfo", JSON.stringify(this.userInfo));
         }
+        return true;
       } catch (error) {
         console.error("Lỗi khi lấy thông tin người dùng:", error);
         this.userInfo = null;
+        return false;
       }
     },
 
     // Đăng xuất
     async logout() {
       try {
-        const token = localStorage.getItem("token"); // Lấy token từ localStorage
         const Toast = useToast();
-        if (token) {
-          Toast.open({
-            message: "Bạn đã đăng xuất",
-            type: "success",
-            duration: 1500,
-            position: "top-right",
-          });
-          localStorage.removeItem("userInfo");
-          localStorage.removeItem("token");
-          const cartStore = useCartStore();
-          const productStore = useProductStore();
-          productStore.resetProduct();
-          cartStore.resetCart();
-          this.userInfo = null;
-        } else {
-          console.log("Không có token để đăng xuất.");
-        }
+        Toast.open({
+          message: "Bạn đã đăng xuất",
+          type: "success",
+          duration: 1500,
+          position: "top-right",
+        });
+        localStorage.removeItem("userInfo");
+        localStorage.removeItem("token");
+        const cartStore = useCartStore();
+        const productStore = useProductStore();
+        productStore.resetProduct();
+        cartStore.resetCart();
+        this.userInfo = null;
       } catch (error) {
         console.error("Lỗi khi đăng xuất:", error);
       }
     },
-    async updateUser(updateData) {
+    async updateUser(id, request) {
       try {
         if (!this.token) {
           return;
         }
-        const response = await axiosInstance.put(
-          `/store/users/${this.userId}`,
-          {
-            updateData,
-          }
-        );
+        console.log(request);
+        const response = await axiosInstance.put(`/store/users/${id}`, request);
 
         if (response.data && response.data.result) {
           this.userInfo = response.data.result;
@@ -152,6 +131,58 @@ export const useUserStore = defineStore("user", {
       } catch (error) {
         console.error("Lỗi khi lấy thông tin người dùng:", error);
         this.userInfo = null;
+      }
+    },
+    async forgotPassword(email) {
+      try {
+        await axiosInstance.get(`/store/reset-password/request?email=${email}`);
+        return true;
+      } catch (error) {
+        return false;
+      }
+    },
+    async resetPassword(password, token) {
+      try {
+        console.log(password);
+        console.log(token);
+        await axiosInstance.post(`/store/reset-password/reset`, null, {
+          params: {
+            newPassword: password,
+            token: token,
+          },
+        });
+        return true;
+      } catch (error) {
+        return false;
+      }
+    },
+    async updateAvatar(userId, file) {
+      this.loading = true;
+      this.error = null;
+      let response;
+      try {
+        const formData = new FormData();
+        formData.append("avatar", file.get("avatar"));
+        response = await axiosInstance.post(
+          `/store/users/upload-avatar/${userId}`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        if (response.data.code === 0) {
+          return response.data.result;
+        } else {
+          this.error = response.data.message;
+          return this.error;
+        }
+      } catch (error) {
+        alert("Lỗi API:", error.message);
+        return null;
+      } finally {
+        this.loading = false;
       }
     },
   },

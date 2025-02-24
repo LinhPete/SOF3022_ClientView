@@ -1,5 +1,5 @@
 <template>
-  <div class="container-default-DK">
+  <div class="container-defaul">
     <article>
       <aside>
         <h1>Thanh toán</h1>
@@ -216,7 +216,8 @@ const handleCheckout = async () => {
   };
 
   const order = await orderStore.createOrder(orderData);
-
+  await cartStore.deleteCartItemsByUserId(customer.value.id);
+  await cartStore.resetCart();
   console.log(order.id)
   if (order) {
     const paymentData = {

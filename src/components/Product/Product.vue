@@ -1,54 +1,47 @@
 <template>
   <article>
-    <p>Danh sách sản phẩm</p>
+    <p class="title">Danh sách sản phẩm</p>
     <div class="boxspto">
       <p v-if="productStore.loading">Đang tải...</p>
       <p v-if="productStore.error" class="error">{{ productStore.error }}</p>
-
-      <div
-        class="boxsp"
-        id="spmoinhat"
-        v-if="!productStore.loading && !productStore.error"
-      >
+  
+      <div class="boxsp" v-if="!productStore.loading && !productStore.error">
         <div class="sp" v-for="product in displayedProducts" :key="product.id">
-          <!-- Sale Label -->
-          <div class="sale" v-if="product.discount">
-            -{{ product.discount }}%
-          </div>
-
-          <!-- Ảnh sản phẩm -->
+          <div class="sale" v-if="product.discount">-{{ product.discount }}%</div>
+  
           <router-link :to="`/product/${product.id}`" class="product-image">
             <img :src="product.image" :alt="product.name" />
           </router-link>
-
-          <!-- Thông tin sản phẩm -->
+  
           <div class="tensp">
             <router-link :to="`/product/${product.id}`">
               <label>{{ product.name }}</label>
             </router-link>
           </div>
-
+  
           <div class="price">
-            <!-- <span class="sale-price">{{ product.price }}₫</span> -->
             <span class="original-price">{{ product.price }}₫</span>
           </div>
-
+  
           <div class="danhgia">
-            <i
-              v-for="star in 5"
-              :key="star"
-              class="fa-solid fa-star fa-2xs"
-              :style="{ color: star <= product.rating ? '#ff4d4f' : '#ccc' }"
-            ></i>
-            <label class="review-count"
-              >({{ product.reviews }} lượt đánh giá)</label
-            >
+            <i v-for="star in 5" :key="star" class="fa-solid fa-star fa-2xs"
+              :style="{ color: star <= product.rating ? '#ff4d4f' : '#ccc' }"></i>
+            <label class="review-count">({{ product.reviews }} đánh giá)</label>
           </div>
-
-          <!-- Giỏ hàng (hover mới hiển thị) -->
+  
           <div class="cart-hover" @click="cartStore.addProductToCart(product)">
             <i class="fa-solid fa-bag-shopping fa-lg"></i>
           </div>
+        </div>
+      </div>
+  
+      <div class="pagination" v-if="totalPages > 1">
+        <div class="pagination-container">
+          <button @click="changePage(currentPage - 1)" :disabled="currentPage === 1"
+            class="pagination-btn next">&#x276E;</button>
+          <span>Trang {{ currentPage }} / {{ totalPages }}</span>
+          <button @click="changePage(currentPage + 1)" :disabled="currentPage >= totalPages"
+            class="pagination-btn prev">&#x276F;</button>
         </div>
       </div>
     </div>
@@ -59,28 +52,30 @@
 import { computed, onMounted, ref } from "vue";
 import { useProductStore } from "../../stores/productStore";
 import { useCartStore } from "../../stores/cartStore";
-import ProductReview from "./ProductReview.vue";
 
 const productStore = useProductStore();
-
 const cartStore = useCartStore();
-
 const currentPage = ref(1);
-
 const totalPages = ref(1);
 
 const displayedProducts = computed(() => productStore.products || []);
 
-onMounted(async () => {
-  const response = await productStore.fetchProduct(currentPage.value);
-  if (response) {
-    totalPages.value = productStore.totalPages;
+const fetchProducts = async (page) => {
+  await productStore.fetchProduct(page);
+  totalPages.value = productStore.totalPages;
+};
+
+const changePage = (newPage) => {
+  if (newPage >= 1 && newPage <= totalPages.value) {
+    currentPage.value = newPage;
+    fetchProducts(newPage);
   }
-});
+};
+
+onMounted(() => fetchProducts(currentPage.value));
 </script>
 
 <style scoped>
-/* Tổng thể */
 .boxspto {
   display: flex;
   flex-direction: column;
@@ -89,30 +84,29 @@ onMounted(async () => {
 }
 
 .boxsp {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
   justify-content: center;
+  perspective: 1000px;
 }
 
-/* Mỗi sản phẩm */
 .sp {
   position: relative;
   width: 200px;
   padding: 15px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background: white;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #f9f9f9, #e6e6e6);
   text-align: center;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transform-style: preserve-3d;
+  transition: transform 0.5s ease, box-shadow 0.3s ease;
 }
 
 .sp:hover {
-  transform: translateY(-5px);
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  transform: rotateY(10deg) rotateX(10deg) scale(1.05);
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.3);
 }
 
-/* Nhãn giảm giá */
 .sale {
   position: absolute;
   top: 10px;
@@ -124,47 +118,30 @@ onMounted(async () => {
   border-radius: 5px;
 }
 
-/* Hình ảnh */
 .product-image img {
   width: 100%;
   height: 180px;
   object-fit: cover;
   border-radius: 5px;
-  transition: opacity 0.2s ease;
+  transition: transform 0.3s ease;
 }
 
 .product-image:hover img {
-  opacity: 0.8;
+  transform: scale(1.1);
 }
 
-/* Tên sản phẩm */
 .tensp label {
-  display: block;
   font-weight: bold;
   font-size: 14px;
-  margin: 10px 0;
-  text-decoration: none;
   color: #333;
 }
 
-/* Giá */
 .price {
   font-size: 16px;
-  margin-bottom: 8px;
-}
-
-.sale-price {
-  color: red;
   font-weight: bold;
+  color: red;
 }
 
-.original-price {
-  color: gray;
-  font-size: 14px;
-  margin-left: 5px;
-}
-
-/* Đánh giá */
 .danhgia {
   display: flex;
   justify-content: center;
@@ -173,12 +150,6 @@ onMounted(async () => {
   font-size: 12px;
 }
 
-.review-count {
-  font-size: 10px;
-  color: gray;
-}
-
-/* Hiệu ứng hover giỏ hàng */
 .cart-hover {
   position: absolute;
   bottom: 15px;
@@ -193,7 +164,7 @@ onMounted(async () => {
   border-radius: 50%;
   cursor: pointer;
   transform: scale(0);
-  transition: transform 0.2s ease, background 0.2s ease;
+  transition: transform 0.3s ease, background 0.3s ease;
 }
 
 .sp:hover .cart-hover {
@@ -204,7 +175,121 @@ onMounted(async () => {
   background: red;
 }
 
-.cart-hover i {
-  font-size: 18px;
+/* Hiệu ứng chung cho nút */
+button {
+  position: relative;
+  display: inline-block;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff;
+  background: linear-gradient(135deg, #ff416c, #ff4b2b);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+/* Hiệu ứng hover với ánh sáng động */
+button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(255, 65, 108, 0.6);
+  background: linear-gradient(135deg, #ff4b2b, #ff416c);
+}
+
+/* Hiệu ứng nhấn xuống với 3D */
+button:active {
+  transform: scale(0.95);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+/* Hiệu ứng phát sáng xung quanh */
+button::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
+  transition: opacity 0.4s ease-in-out;
+  opacity: 0;
+}
+
+button:hover::before {
+  opacity: 1;
+}
+
+/* Hiệu ứng riêng cho nút trong form đánh giá */
+.submit-button {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+}
+
+.submit-button:hover {
+  background: linear-gradient(135deg, #0056b3, #007bff);
+  box-shadow: 0 8px 20px rgba(0, 123, 255, 0.6);
+}
+
+.submit-button:active {
+  transform: scale(0.95);
+}
+
+/* Nút phân trang */
+.pagination button {
+  background: linear-gradient(135deg, #d3dfe6, #9bc0ff);
+  margin: 5px;
+}
+
+.pagination button:hover {
+  box-shadow: 0 8px 20px rgba(141, 193, 221, 0.6);
+}
+
+.pagination button:active {
+  transform: scale(0.95);
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin-top: 20px;
+  position: relative;
+  z-index: 10;
+}
+
+.pagination-btn {
+  background: rgba(0, 255, 255, 0.2);
+  border: 2px solid cyan;
+  color: cyan;
+  font-size: 24px;
+  padding: 15px 20px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0px 0px 10px cyan, 0px 0px 40px rgba(0, 255, 255, 0.5);
+}
+
+.pagination-btn:hover {
+  background: cyan;
+  color: black;
+  transform: scale(1.2) rotate(10deg);
+  box-shadow: 0px 0px 20px cyan, 0px 0px 50px rgba(0, 255, 255, 0.7);
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.pagination-btn.prev {
+  transform: perspective(500px) rotateY(10deg);
+}
+
+.pagination-btn.next {
+  transform: perspective(500px) rotateY(-10deg);
 }
 </style>

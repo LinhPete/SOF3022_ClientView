@@ -220,5 +220,21 @@ export const useCartStore = defineStore("cart", {
         console.error("Lỗi khi thực hiện checkout:", error);
       }
     },
+    async deleteCartItemsByUserId(userId) {
+      try {
+        const response = await axiosInstance.delete(`/store/cart/items/${userId}`);
+
+        if (response.data.code === 0) {
+          console.log("Xóa giỏ hàng thành công:", response.data);
+          return response.data; // Trả về kết quả nếu cần
+        }
+      } catch (error) {
+        console.error(
+          "Lỗi khi xóa giỏ hàng:",
+          error.response?.data || error.message
+        );
+        throw error;
+      }
+    },
   },
 });

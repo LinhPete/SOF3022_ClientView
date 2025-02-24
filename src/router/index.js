@@ -61,6 +61,12 @@ const router = createRouter({
       component: () => import("../components/Order/OrderList.vue"),
       props: true,
     },
+    {
+      path: "/login-success",
+      name: "login success",
+      component: () => import("../components/User/LoginSuccess.vue"),
+      props: true,
+    },
   ],
 });
 

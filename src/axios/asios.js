@@ -1,4 +1,7 @@
 import axios from "axios";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 // Tạo một instance của axios
 const axiosInstance = axios.create({
   baseURL: "http://localhost:8080",
@@ -22,10 +25,8 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Xử lý lỗi chung, ví dụ: hết hạn token
     if (error.response && error.response.status === 401) {
-      console.log("Unauthorized! Redirecting to login...");
-      // Chuyển hướng người dùng đến trang đăng nhập
+      router.push("/login");
     }
     return Promise.reject(error);
   }

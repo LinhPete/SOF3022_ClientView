@@ -7,7 +7,7 @@
         {{ userStore.userInfo.fullName }}
       </span>
     </div>
-
+  
     <!-- DROPDOWN MENU -->
     <div v-if="isOpen" class="dropdown">
       <p v-if="!userStore.userInfo">
@@ -17,14 +17,10 @@
         <router-link to="/login" class="dropdown-item">Đăng nhập</router-link>
       </p>
       <p v-if="userStore.userInfo">
-        <router-link to="/user-info" class="dropdown-item"
-          >Thông tin cá nhân</router-link
-        >
+        <router-link to="/user-info" class="dropdown-item">Thông tin cá nhân</router-link>
       </p>
       <p v-if="userStore.userInfo">
-        <router-link to="/order/list" class="dropdown-item"
-          >Thông tin đơn hàng</router-link
-        >
+        <router-link to="/order/list" class="dropdown-item">Thông tin đơn hàng</router-link>
       </p>
       <p v-if="userStore.userInfo">
         <button @click="logout" class="dropdown-item">Đăng xuất</button>

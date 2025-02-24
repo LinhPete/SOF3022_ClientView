@@ -4,53 +4,36 @@
       <div class="form-container">
         <form @submit.prevent="handleLogin">
           <div class="form-group">
-            <input
-              type="email"
-              id="email"
-              name="email"
-              placeholder="Email"
-              v-model="model.email"
-              required
-            />
+            <input type="email" id="email" name="email" placeholder="Email" v-model="model.email" required />
           </div>
           <div class="form-group">
-            <input
-              type="password"
-              id="password"
-              name="password"
-              placeholder="Mật khẩu"
-              v-model="model.password"
-              required
-            />
+            <input type="password" id="password" name="password" placeholder="Mật khẩu" v-model="model.password"
+              required />
           </div>
-
+  
           <!-- Thông báo lỗi -->
           <p v-if="userStore.message" class="error-message">
             {{ userStore.message }}
           </p>
-
+  
           <!-- Nút Đăng nhập -->
           <button type="submit" class="submit-btn">ĐĂNG NHẬP</button>
         </form>
-
+  
         <!-- Đăng nhập bằng SSO -->
         <div class="sso-buttons">
           <button @click="googleLogin" class="google-btn">
             <img
               src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/1200px-Google_%22G%22_logo.svg.png"
-              alt="Google"
-            />
+              alt="Google" />
             Đăng nhập với Google
           </button>
           <button @click="loginWithFacebook" class="facebook-btn">
-            <img
-              src="https://upload.wikimedia.org/wikipedia/commons/0/05/Facebook_Logo_%282019%29.png"
-              alt="Facebook"
-            />
+            <img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Facebook_Logo_%282019%29.png" alt="Facebook" />
             Đăng nhập với Facebook
           </button>
         </div>
-
+  
         <!-- Link Quên mật khẩu & Đăng ký -->
         <div class="links">
           <router-link to="/forgot-password">Quên mật khẩu?</router-link>
@@ -67,7 +50,6 @@ import { ref } from "vue";
 import { useUserStore } from "../../stores/userStore";
 import { useRouter } from "vue-router";
 import { useToast } from "vue-toast-notification";
-import { GoogleLogin } from "vue3-google-login";
 
 const userStore = useUserStore();
 const router = useRouter();
@@ -94,20 +76,14 @@ const handleLogin = async () => {
   }
 };
 
-const googleLogin = () => {
-  GoogleLogin({
-    clientId: "CLIENT_ID",
-    callback: async (response) => {
-      if (response.credential) {
-        await userStore.googleSignIn(response.credential);
-      }
-    },
-  });
-};
-
+const googleLogin = async () => {
+  const response = await userStore.googleSignIn();
+  console.log(response)
+}
 const loginWithFacebook = () => {
   userStore.loginWithFacebook();
 };
+
 </script>
 
 <style scoped>
