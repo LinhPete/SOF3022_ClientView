@@ -77,7 +77,7 @@ const googleLogin = () => {
       }
     },
   });
-};;
+};
 
 const loginWithFacebook = () => {
   userStore.loginWithFacebook();
