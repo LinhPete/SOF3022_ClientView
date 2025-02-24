@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from "vue-router";
-import { useCartStore } from "../stores/cartStore";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -20,6 +19,11 @@ const router = createRouter({
       component: () => import("../components/User/DangKy.vue"),
     },
     {
+      path: "/user-info",
+      name: "userInfo",
+      component: () => import("../components/User/UserInfo.vue"),
+    },
+    {
       path: "/forgot-password",
       name: "forgotpassword",
       component: () => import("../components/User/QuenMatKhau.vue"),
@@ -35,39 +39,9 @@ const router = createRouter({
       component: () => import("../components/Order/OrderForm.vue"),
     },
     {
-      path: "/Accessories",
-      name: "Accessories",
-      component: () => import("../components/Accessories.vue"),
-    },
-    {
-      path: "/BestSelling",
-      name: "BestSelling",
-      component: () => import("../components/BestSelling.vue"),
-    },
-    {
-      path: "/Bottoms",
-      name: "Bottoms",
-      component: () => import("../components/Bottoms.vue"),
-    },
-    {
-      path: "/FashSale",
-      name: "FashSale",
-      component: () => import("../components/FashSale.vue"),
-    },
-    {
       path: "/outerWear",
       name: "PuterWear",
       component: () => import("../components/Category/CategoryDetail.vue"),
-    },
-    {
-      path: "/SaleSaff",
-      name: "SaleSaff",
-      component: () => import("../components/SaleSaff.vue"),
-    },
-    {
-      path: "/Tops",
-      name: "Tops",
-      component: () => import("../components/Tops.vue"),
     },
     {
       path: "/category/:id",

@@ -63,5 +63,20 @@ export const useProductStore = defineStore("products", {
         return null;
       }
     },
+    async fetchProductbyCategoryId(categoryId, page = 1) {
+      try {
+        const response = await axiosInstance.get(
+          `/store/products/search/category/${categoryId}?pageNum=${page}`
+        );
+        if (response) {
+          this.products = response.data.content;
+          this.totalPages = response.data.totalPages;
+        } else {
+          return { message: "Category này không có sản phẩm", products: [] };
+        }
+      } catch (error) {
+        console.error("Lỗi khi fetch sản phẩm theo category:", error);
+      }
+    },
   },
 });

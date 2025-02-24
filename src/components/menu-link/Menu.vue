@@ -21,7 +21,6 @@
 <script setup>
 import { onMounted, computed } from "vue";
 import { useCategoryStore } from "../../stores/categoryStrore";
-import { mapStores } from "pinia";
 // Sử dụng store để truy xuất dữ liệu danh mục
 const categoryStore = useCategoryStore();
 
