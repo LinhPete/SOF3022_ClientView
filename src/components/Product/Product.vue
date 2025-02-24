@@ -59,6 +59,7 @@
 import { computed, onMounted, ref } from "vue";
 import { useProductStore } from "../../stores/productStore";
 import { useCartStore } from "../../stores/cartStore";
+import ProductReview from "./ProductReview.vue";
 
 const productStore = useProductStore();
 

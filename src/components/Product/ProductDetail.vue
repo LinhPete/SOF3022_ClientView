@@ -61,7 +61,11 @@
             style="font-size: 100px; padding-left: -20px"
           ></i>
         </div>
+        <ProductReview />
+
       </div>
+
+
     </div>
   </div>
 </template>
@@ -72,6 +76,7 @@ import { useRoute } from "vue-router";
 import { useProductStore } from "../../stores/productStore";
 import { useCategoryStore } from "../../stores/categoryStrore";
 import { useCartStore } from "../../stores/cartStore";
+import ProductReview from "./ProductReview.vue";
 const route = useRoute();
 const productStore = useProductStore();
 const product = ref({});
