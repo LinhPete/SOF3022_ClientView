@@ -160,19 +160,22 @@ const triggerFileUpload = () => {
 const handleAvatarUpload = async (event) => {
   const file = event.target.files[0];
   if (file) {
+    const formData = new FormData();
+    formData.append("avatar", file);
     try {
-      const updatedAvatar = await userStore.updateAvatar(userStore.userInfo.id, file);
+      const updatedAvatar = await userStore.updateAvatar(userStore.userInfo.id, formData);
       if (updatedAvatar) {
         toast.open({
           message: "Cập nhật avatar thành công!",
           type: "success",
           duration: 3000,
         });
+        
       } else {
         toast.open({
           message: "Cập nhật avatar thất bại!",
           type: "error",
-          duration: 3000,
+          duration: 3000, 
         });
       }
     } catch (error) {
